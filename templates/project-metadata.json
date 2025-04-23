@@ -1,0 +1,24 @@
+{
+    "name": "Novo Projeto",
+    "description": "Descrição do projeto",
+    "technologies": [],
+    "type": "new",
+    "createdAt": "2025-04-23T00:00:00.000Z",
+    "structure": {
+      "directories": [],
+      "files": []
+    },
+    "taskCategories": [
+      "backend",
+      "frontend",
+      "database",
+      "devops",
+      "testing",
+      "documentation",
+      "refactoring",
+      "bugfix",
+      "feature"
+    ],
+    "team": [],
+    "modules": []
+  }
