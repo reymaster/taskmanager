@@ -127,8 +127,29 @@ async function createTasksForNewProject(projectMetadata) {
     }
   ]);
 
+  // Atualizar os metadados do projeto com as novas informações
+  const taskmanagerDir = await getTaskManagerDir();
+  const updatedMetadata = {
+    ...projectMetadata,
+    projectInfo: {
+      vision: projectQuestions.vision,
+      audience: projectQuestions.audience,
+      features: projectQuestions.features,
+      constraints: projectQuestions.constraints,
+      complexity: projectQuestions.complexity,
+      additionalInfo: projectQuestions.additionalInfo
+    },
+    lastUpdated: new Date().toISOString()
+  };
+
+  // Salvar os metadados atualizados
+  await fs.writeFile(
+    path.join(taskmanagerDir, 'project-metadata.json'),
+    JSON.stringify(updatedMetadata, null, 2)
+  );
+
   // Gerar tarefas com base nas respostas
-  console.log(chalk.green('\n✅ Informações coletadas com sucesso!'));
+  console.log(chalk.green('\n✅ Informações coletadas e salvas com sucesso!'));
   console.log(chalk.blue('\nAgora vamos gerar as tarefas iniciais para o seu projeto...'));
 
   // Opção para usar IA ou criar manualmente
@@ -146,7 +167,7 @@ async function createTasksForNewProject(projectMetadata) {
 
   if (generateMethod === 'ai') {
     // Gerar tarefas usando IA
-    await generateTasksWithAI(projectMetadata, projectQuestions);
+    await generateTasksWithAI(updatedMetadata, projectQuestions);
   } else {
     // Criar tarefas manualmente
     console.log(chalk.blue('\nVamos criar as tarefas manualmente.'));
@@ -158,6 +179,7 @@ async function createTasksForNewProject(projectMetadata) {
  * Gera tarefas usando IA com base nas informações do projeto
  * @param {Object} projectMetadata - Metadados do projeto
  * @param {Object} projectInfo - Informações detalhadas do projeto
+ * @returns {Promise<void>}
  */
 async function generateTasksWithAI(projectMetadata, projectInfo) {
   const spinner = ora('Gerando tarefas com IA...').start();
@@ -167,7 +189,7 @@ async function generateTasksWithAI(projectMetadata, projectInfo) {
     const projectDescription = `
 Nome do Projeto: ${projectMetadata.name}
 Descrição: ${projectMetadata.description}
-Tecnologias: ${projectMetadata.technologies.join(', ')}
+Tecnologias: ${projectMetadata.technologies?.join(', ') || 'Não especificadas'}
 Visão Geral: ${projectInfo.vision}
 Público-alvo: ${projectInfo.audience}
 Funcionalidades: ${projectInfo.features}
@@ -275,7 +297,7 @@ async function createTasksWithAI(projectMetadata, hasExistingTasks) {
   const aiPrompt = `
 Nome do Projeto: ${projectMetadata.name}
 Descrição: ${projectMetadata.description}
-Tecnologias: ${projectMetadata.technologies.join(', ')}
+Tecnologias: ${projectMetadata.technologies?.join(', ') || 'Não especificadas'}
 Contexto: ${context}
 Descrição da tarefa: ${taskContext.taskDescription}
 Informações adicionais: ${taskContext.additionalInfo}${existingTasksContext}

@@ -1,0 +1,10 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+## Project Overview
+- Always check if the user request is already implemented and analyse implementation before modify any file.
+- Always get the project file structure to have accurate modifications in right file path.
+- Always check if the project has a `./docs` folder and an `INSTRUCTIONS.md` file to have all informations about project. If doesn`t have the instructions file, create it.
+- Always check if the project has a `./docs` folder and an `DIAGRAMS.md` file to have informations about flux and relations in project. If doesn`t have the instructions file, create it.

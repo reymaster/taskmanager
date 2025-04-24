@@ -20,18 +20,19 @@ import {
 /**
  * Gera tarefas com base na descrição do projeto usando IA
  * @param {String} projectDescription - Descrição detalhada do projeto
- * @param {String} projectType - Tipo de projeto ('new' ou 'existing')
+ * @param {String} type - Tipo de projeto ('new' ou 'existing')
  * @param {Number} taskCount - Número de tarefas a serem geradas
- * @returns {Array} Array de tarefas geradas
+ * @returns {Promise<Array>} Array de tarefas geradas
  */
-export async function generateTasks(projectDescription, projectType = 'new', taskCount = 5) {
+export async function generateTasks(projectDescription, projectType, taskCount = 5) {
+  console.log('>>>', projectType, '<<<');
   const config = loadEnvConfig();
 
   // Verifica se a IA está habilitada
   if (!config.enabled) {
     console.log(chalk.yellow('Atenção: IA está desabilitada nas configurações.'));
     console.log(chalk.blue('Para habilitar, configure AI_ENABLED=true no arquivo .env dentro da pasta .taskmanager'));
-    return simulateTasks(projectDescription, projectType, taskCount);
+    return simulateTasks(projectDescription, projectType || 'new', taskCount);
   }
 
   // Tenta usar o provedor configurado
@@ -41,7 +42,7 @@ export async function generateTasks(projectDescription, projectType = 'new', tas
         if (!config.openaiKey) {
           console.log(chalk.yellow('Atenção: Chave da OpenAI não configurada.'));
           console.log(chalk.blue('Configure OPENAI_API_KEY no arquivo .env dentro da pasta .taskmanager'));
-          return simulateTasks(projectDescription, projectType, taskCount);
+          return simulateTasks(projectDescription, projectType || 'new', taskCount);
         }
         return await generateTasksWithOpenAI(
           projectDescription,
@@ -77,8 +78,10 @@ export async function generateTasks(projectDescription, projectType = 'new', tas
         );
 
       default:
+        console.log('>>>PROVIDER: ', config.provider, '<<<');
         console.log(chalk.yellow(`Provedor de IA '${config.provider}' não suportado.`));
         console.log(chalk.blue('Provedores suportados: openai, anthropic, huggingface'));
+        console.log('>>>ProjectType:', projectType, '<<<');
         return simulateTasks(projectDescription, projectType, taskCount);
     }
   } catch (error) {

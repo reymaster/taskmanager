@@ -33,7 +33,7 @@ export async function generateTasksWithHuggingFace(projectDescription, projectTy
 
     const prompt = createPromptForTaskGeneration(projectDescription, projectType, taskCount);
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${aiConfig.model || 'mistralai/Mistral-7B-Instruct-v0.2'}`, {
+    const response = await fetch(`https://api-inference.huggingface.co/models/${aiConfig.model || 'mistralai/Mixtral-8x7B-Instruct-v0.1'}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${aiConfig.apiKey}`,

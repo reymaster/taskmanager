@@ -8,11 +8,16 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import { existsSync } from 'fs';
 import { createInitialConfig } from '../utils/config.js';
+
+// Obter o diretório atual do módulo
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Inicializa o TaskManager no diretório atual
@@ -203,6 +208,34 @@ async function configureProject(projectType, taskmanagerDir) {
     path.join(taskmanagerDir, 'config.json'),
     JSON.stringify(config, null, 2)
   );
+
+  // Verifica se o arquivo de metadados já existe
+  const metadataPath = path.join(taskmanagerDir, 'project-metadata.json');
+  let existingTechnologies = [];
+
+  if (existsSync(metadataPath)) {
+    try {
+      const existingMetadata = JSON.parse(await fs.readFile(metadataPath, 'utf-8'));
+      existingTechnologies = existingMetadata.technologies || [];
+    } catch (error) {
+      console.error(`Erro ao ler metadados existentes: ${error.message}`);
+    }
+  }
+
+  // Cria o arquivo de metadados do projeto
+  const projectMetadata = {
+    type: projectType,
+    name: path.basename(process.cwd()),
+    description: 'Projeto gerenciado pelo TaskManager',
+    technologies: existingTechnologies,
+    createdAt: new Date().toISOString(),
+    lastUpdated: new Date().toISOString()
+  };
+
+  await fs.writeFile(
+    metadataPath,
+    JSON.stringify(projectMetadata, null, 2)
+  );
 }
 
 /**
@@ -247,25 +280,19 @@ async function configureNewProject(taskmanagerDir) {
           { name: 'Java', value: 'java' },
           { name: 'Spring', value: 'spring' },
           { name: 'C#', value: 'csharp' },
-          { name: '.NET', value: 'dotnet' },
-          { name: 'PHP', value: 'php' },
-          { name: 'Laravel', value: 'laravel' },
-          { name: 'Ruby', value: 'ruby' },
-          { name: 'Ruby on Rails', value: 'rails' },
-          { name: 'Go', value: 'go' },
-          { name: 'Rust', value: 'rust' },
-          { name: 'Outro', value: 'other' }
+          { name: '.NET', value: 'dotnet' }
         ]
       }
     ]);
 
-    // Salva as informações no arquivo de metadados do projeto
+    // Atualiza o arquivo de metadados do projeto
     const projectMetadata = {
+      type: 'new',
       name: projectName,
       description: projectDescription,
       technologies: projectTech,
-      type: 'new',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
     };
 
     await fs.writeFile(
@@ -273,12 +300,9 @@ async function configureNewProject(taskmanagerDir) {
       JSON.stringify(projectMetadata, null, 2)
     );
 
-    console.log(chalk.green('\n📝 Informações do projeto salvas com sucesso'));
-    console.log(chalk.blue('\nNa próxima etapa, você poderá criar tarefas para iniciar o desenvolvimento.'));
-    console.log(chalk.blue('Use o comando: taskmanager create\n'));
-
+    spinner.succeed('Projeto configurado com sucesso');
   } catch (error) {
-    spinner.fail(`Erro ao configurar novo projeto: ${error.message}`);
+    spinner.fail(`Erro ao configurar projeto: ${error.message}`);
     throw error;
   }
 }
@@ -367,14 +391,7 @@ async function configureExistingProject(taskmanagerDir) {
             { name: 'Java', value: 'java', checked: technologies.includes('java') },
             { name: 'Spring', value: 'spring', checked: technologies.includes('spring') },
             { name: 'C#', value: 'csharp', checked: technologies.includes('csharp') },
-            { name: '.NET', value: 'dotnet', checked: technologies.includes('dotnet') },
-            { name: 'PHP', value: 'php', checked: technologies.includes('php') },
-            { name: 'Laravel', value: 'laravel', checked: technologies.includes('laravel') },
-            { name: 'Ruby', value: 'ruby', checked: technologies.includes('ruby') },
-            { name: 'Ruby on Rails', value: 'rails', checked: technologies.includes('rails') },
-            { name: 'Go', value: 'go', checked: technologies.includes('go') },
-            { name: 'Rust', value: 'rust', checked: technologies.includes('rust') },
-            { name: 'Outro', value: 'other' }
+            { name: '.NET', value: 'dotnet', checked: technologies.includes('dotnet') }
           ],
           when: (answers) => !answers.confirmTechnologies
         }
@@ -402,14 +419,7 @@ async function configureExistingProject(taskmanagerDir) {
             { name: 'Java', value: 'java' },
             { name: 'Spring', value: 'spring' },
             { name: 'C#', value: 'csharp' },
-            { name: '.NET', value: 'dotnet' },
-            { name: 'PHP', value: 'php' },
-            { name: 'Laravel', value: 'laravel' },
-            { name: 'Ruby', value: 'ruby' },
-            { name: 'Ruby on Rails', value: 'rails' },
-            { name: 'Go', value: 'go' },
-            { name: 'Rust', value: 'rust' },
-            { name: 'Outro', value: 'other' }
+            { name: '.NET', value: 'dotnet' }
           ]
         }
       ]);
@@ -417,13 +427,14 @@ async function configureExistingProject(taskmanagerDir) {
       technologies = selectedTech;
     }
 
-    // Salva as informações no arquivo de metadados do projeto
+    // Atualiza o arquivo de metadados do projeto
     const projectMetadata = {
+      type: 'existing',
       name: projectName,
       description: projectDescription,
       technologies: technologies,
-      type: 'existing',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
     };
 
     await fs.writeFile(
@@ -431,12 +442,9 @@ async function configureExistingProject(taskmanagerDir) {
       JSON.stringify(projectMetadata, null, 2)
     );
 
-    console.log(chalk.green('\n📝 Informações do projeto salvas com sucesso'));
-    console.log(chalk.blue('\nAgora você pode criar tarefas para este projeto.'));
-    console.log(chalk.blue('Use o comando: taskmanager create\n'));
-
+    spinner.succeed('Projeto configurado com sucesso');
   } catch (error) {
-    spinner.fail(`Erro ao configurar projeto existente: ${error.message}`);
+    spinner.fail(`Erro ao configurar projeto: ${error.message}`);
     throw error;
   }
 }

@@ -38,7 +38,7 @@ export async function generateTasksWithAnthropic(projectDescription, projectType
     const prompt = createPromptForTaskGeneration(projectDescription, projectType, taskCount);
 
     const response = await anthropic.messages.create({
-      model: aiConfig.model || 'claude-3-haiku-20240307',
+      model: aiConfig.model || 'claude-3-5-sonnet-20240409',
       max_tokens: 4000,
       temperature: 0.7,
       messages: [
@@ -66,7 +66,7 @@ export async function generateTasksWithAnthropic(projectDescription, projectType
  */
 function createPromptForTaskGeneration(projectDescription, projectType, taskCount) {
   return `
-<instruction>
+<instructions>
 Você é um especialista em gerenciamento de projetos e desenvolvimento de software.
 Gere exatamente ${taskCount} tarefas para um ${projectType === 'new' ? 'novo' : 'existente'} projeto com a seguinte descrição:
 
@@ -100,7 +100,7 @@ Se o projeto for novo, comece com tarefas de setup e configuração inicial.
 Se for um projeto existente, concentre-se em tarefas de desenvolvimento, melhoria ou correção.
 
 Seu resultado deve conter apenas e exatamente o array JSON com as tarefas, sem explicações adicionais.
-</instruction>
+</instructions>
 `;
 }
 

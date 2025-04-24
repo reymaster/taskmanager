@@ -485,3 +485,12 @@ export async function removeDependency(taskId, dependsOnId) {
 
   return true;
 }
+
+/**
+ * Obtém todas as tarefas do projeto
+ * @returns {Array} Array de tarefas
+ */
+export async function getTasks() {
+  const tasksData = await loadTasks();
+  return tasksData.tasks;
+}

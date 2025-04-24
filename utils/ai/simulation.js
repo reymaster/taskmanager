@@ -26,6 +26,7 @@ export const contextPrompts = {
    * @returns {Array} Array de tarefas simuladas
    */
   export function simulateTasks(projectDescription, projectType, taskCount = 5) {
+    console.log('>>>simulateTasks', projectType, taskCount, '<<<');
     // Extrai informações básicas da descrição do projeto
     const lines = projectDescription.split('\n');
     let projectName = 'Projeto';
@@ -43,8 +44,8 @@ export const contextPrompts = {
     // Gerar tarefas simuladas com base no tipo de projeto
     const now = new Date().toISOString();
 
-    if (projectType === 'new') {
-      return generateTasksForNewProject(projectName, technologies, taskCount, now);
+    if (!projectType || projectType === 'new') {
+      return generateTasksForNewProject(projectName, technologies, taskCount, now, projectType);
     } else {
       return generateTasksForExistingProject(projectDescription, projectName, technologies, taskCount, now);
     }
@@ -58,7 +59,7 @@ export const contextPrompts = {
    * @param {String} timestamp - Timestamp para as tarefas
    * @returns {Array} Array de tarefas
    */
-  function generateTasksForNewProject(projectName, technologies, taskCount, timestamp) {
+  function generateTasksForNewProject(projectName, technologies, taskCount, timestamp, projectType) {
     // Tarefas para projeto novo
     const initialTasks = [
       {
@@ -202,7 +203,7 @@ export const contextPrompts = {
    * @param {String} timestamp - Timestamp para as tarefas
    * @returns {Array} Array de tarefas
    */
-  function generateTasksForExistingProject(projectDescription, projectName, technologies, taskCount, timestamp) {
+  function generateTasksForExistingProject(projectDescription, projectName, technologies, taskCount, timestamp, projectType) {
     // Tentar identificar o contexto a partir da descrição
     let context = 'feature'; // Padrão: nova funcionalidade
 

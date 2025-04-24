@@ -5,6 +5,7 @@
  */
 
 import chalk from 'chalk';
+import OpenAI from 'openai';
 import { simulateTasks } from './simulation.js';
 
 /**
@@ -22,15 +23,6 @@ export async function generateTasksWithOpenAI(projectDescription, projectType, t
   }
 
   try {
-    // Aqui seria implementada a integração real com a API da OpenAI
-    // Para implementação futura
-
-    console.log(chalk.yellow('Funcionalidade de integração com OpenAI ainda não implementada.'));
-    return simulateTasks(projectDescription, projectType, taskCount);
-
-    /*
-    // Exemplo de como a implementação seria:
-
     const openai = new OpenAI({ apiKey: aiConfig.apiKey });
 
     const prompt = createPromptForTaskGeneration(projectDescription, projectType, taskCount);
@@ -38,16 +30,15 @@ export async function generateTasksWithOpenAI(projectDescription, projectType, t
     const response = await openai.chat.completions.create({
       model: aiConfig.model || 'gpt-4',
       messages: [
-        { role: 'system', content: 'Você é um assistente especializado em gerenciamento de projetos.' },
+        { role: 'system', content: 'Você é um assistente especializado em gerenciamento de projetos, com experiência em desenvolvimento de software e metodologias ágeis.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 2048
+      max_tokens: 4096
     });
 
     const tasksJson = parseTasksFromResponse(response.choices[0].message.content);
     return tasksJson;
-    */
 
   } catch (error) {
     console.error(chalk.red(`Erro na API da OpenAI: ${error.message}`));
@@ -95,42 +86,56 @@ Retorne as tarefas no formato JSON, seguindo esta estrutura:
 Gere tarefas lógicas e bem estruturadas que sigam boas práticas de desenvolvimento.
 Se o projeto for novo, comece com tarefas de setup e configuração inicial.
 Se for um projeto existente, concentre-se em tarefas de desenvolvimento, melhoria ou correção.
+
+Certifique-se de que:
+1. As tarefas sejam específicas e mensuráveis
+2. As dependências entre tarefas sejam lógicas
+3. As prioridades reflitam a importância real das tarefas
+4. As subtarefas sejam relevantes e ajudem a quebrar tarefas complexas
+5. As estratégias de teste sejam práticas e efetivas
 `;
 }
 
 /**
- * Faz o parse da resposta da API em formato JSON para um array de tarefas
- * @param {String} responseText - Texto da resposta da API
+ * Analisa a resposta da OpenAI e extrai as tarefas
+ * @param {String} responseText - Texto da resposta da OpenAI
  * @returns {Array} Array de tarefas
  */
 function parseTasksFromResponse(responseText) {
   try {
-    // Encontra o objeto JSON na resposta
-    const jsonMatch = responseText.match(/\[\s*{.*}\s*\]/s);
-
-    if (jsonMatch) {
-      // Adiciona timestamps a todas as tarefas
-      const tasks = JSON.parse(jsonMatch[0]);
-      const now = new Date().toISOString();
-
-      for (const task of tasks) {
-        task.createdAt = now;
-        task.updatedAt = now;
-
-        if (task.subtasks) {
-          for (const subtask of task.subtasks) {
-            subtask.createdAt = now;
-            subtask.updatedAt = now;
-          }
-        }
-      }
-
-      return tasks;
-    } else {
-      throw new Error('Não foi possível encontrar JSON válido na resposta');
+    // Tenta extrair o JSON da resposta
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error('Não foi possível encontrar JSON na resposta');
     }
+
+    const tasks = JSON.parse(jsonMatch[0]);
+
+    // Adiciona timestamps e garante que todos os campos necessários existam
+    const now = new Date().toISOString();
+    return tasks.map((task, index) => ({
+      id: index + 1,
+      title: task.title || `Tarefa ${index + 1}`,
+      description: task.description || '',
+      status: task.status || 'pending',
+      priority: task.priority || 'medium',
+      dependencies: task.dependencies || [],
+      details: task.details || '',
+      testStrategy: task.testStrategy || '',
+      category: task.category || 'general',
+      createdAt: now,
+      updatedAt: now,
+      subtasks: (task.subtasks || []).map((subtask, subIndex) => ({
+        id: subIndex + 1,
+        title: subtask.title || `Subtarefa ${subIndex + 1}`,
+        description: subtask.description || '',
+        status: subtask.status || 'pending',
+        createdAt: now,
+        updatedAt: now
+      }))
+    }));
   } catch (error) {
-    console.error(chalk.red(`Erro ao fazer parse da resposta: ${error.message}`));
+    console.error(chalk.red(`Erro ao analisar resposta da OpenAI: ${error.message}`));
     throw error;
   }
 }
