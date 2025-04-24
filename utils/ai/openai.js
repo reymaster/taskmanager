@@ -38,7 +38,7 @@ export async function generateTasksWithOpenAI(projectDescription, projectType, t
     });
 
     const tasksJson = parseTasksFromResponse(response.choices[0].message.content);
-    return tasksJson;
+    return validateAndAdjustDependencies(tasksJson);
 
   } catch (error) {
     console.error(chalk.red(`Erro na API da OpenAI: ${error.message}`));
@@ -87,9 +87,18 @@ Gere tarefas lógicas e bem estruturadas que sigam boas práticas de desenvolvim
 Se o projeto for novo, comece com tarefas de setup e configuração inicial.
 Se for um projeto existente, concentre-se em tarefas de desenvolvimento, melhoria ou correção.
 
+Regras importantes para dependências:
+1. Uma tarefa só pode depender de tarefas com IDs menores que o seu próprio ID
+2. As dependências devem formar um grafo acíclico direcionado (DAG)
+3. Uma tarefa não pode depender de si mesma
+4. As dependências devem ser lógicas e fazer sentido no contexto do projeto
+5. Se uma tarefa A depende de B, e B depende de C, então A deve depender explicitamente de C também
+6. Para projetos novos, a primeira tarefa (ID 1) não deve ter dependências
+7. Para projetos existentes, verifique as tarefas existentes listadas na descrição do projeto
+
 Certifique-se de que:
 1. As tarefas sejam específicas e mensuráveis
-2. As dependências entre tarefas sejam lógicas
+2. As dependências entre tarefas sejam lógicas e respeitem as regras acima
 3. As prioridades reflitam a importância real das tarefas
 4. As subtarefas sejam relevantes e ajudem a quebrar tarefas complexas
 5. As estratégias de teste sejam práticas e efetivas
@@ -138,4 +147,82 @@ function parseTasksFromResponse(responseText) {
     console.error(chalk.red(`Erro ao analisar resposta da OpenAI: ${error.message}`));
     throw error;
   }
+}
+
+/**
+ * Valida e ajusta as dependências das tarefas
+ * @param {Array} tasks - Array de tarefas
+ * @returns {Array} Array de tarefas com dependências validadas
+ */
+export function validateAndAdjustDependencies(tasks) {
+  // Cria um grafo de dependências
+  const graph = new Map();
+  tasks.forEach(task => graph.set(task.id, new Set()));
+
+  // Função para verificar ciclos no grafo
+  function hasCycle(taskId, visited = new Set(), recursionStack = new Set()) {
+    visited.add(taskId);
+    recursionStack.add(taskId);
+
+    const dependencies = graph.get(taskId);
+    for (const depId of dependencies) {
+      if (!visited.has(depId)) {
+        if (hasCycle(depId, visited, recursionStack)) {
+          return true;
+        }
+      } else if (recursionStack.has(depId)) {
+        return true;
+      }
+    }
+
+    recursionStack.delete(taskId);
+    return false;
+  }
+
+  // Valida e ajusta as dependências de cada tarefa
+  tasks.forEach(task => {
+    // Filtra dependências inválidas
+    task.dependencies = task.dependencies.filter(depId => {
+      // Remove dependências para IDs maiores
+      if (depId >= task.id) {
+        console.log(chalk.yellow(`Removendo dependência inválida: Tarefa ${task.id} não pode depender da tarefa ${depId}`));
+        return false;
+      }
+      // Remove dependências para tarefas que não existem
+      if (!tasks.some(t => t.id === depId)) {
+        console.log(chalk.yellow(`Removendo dependência inexistente: Tarefa ${depId} não existe`));
+        return false;
+      }
+      return true;
+    });
+
+    // Adiciona dependências transitivas
+    const transitiveDeps = new Set();
+    task.dependencies.forEach(depId => {
+      const depTask = tasks.find(t => t.id === depId);
+      if (depTask) {
+        depTask.dependencies.forEach(transitiveDepId => {
+          if (transitiveDepId < task.id && transitiveDepId !== task.id) {
+            transitiveDeps.add(transitiveDepId);
+          }
+        });
+      }
+    });
+    task.dependencies = [...new Set([...task.dependencies, ...transitiveDeps])].sort((a, b) => a - b);
+
+    // Atualiza o grafo
+    graph.get(task.id).clear();
+    task.dependencies.forEach(depId => graph.get(task.id).add(depId));
+  });
+
+  // Verifica ciclos no grafo
+  tasks.forEach(task => {
+    if (hasCycle(task.id)) {
+      console.log(chalk.yellow(`Detectado ciclo de dependências na tarefa ${task.id}. Removendo dependências circulares.`));
+      task.dependencies = [];
+      graph.get(task.id).clear();
+    }
+  });
+
+  return tasks;
 }

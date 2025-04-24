@@ -491,6 +491,5 @@ export async function removeDependency(taskId, dependsOnId) {
  * @returns {Array} Array de tarefas
  */
 export async function getTasks() {
-  const tasksData = await loadTasks();
-  return tasksData.tasks;
+  return await loadTasks();
 }

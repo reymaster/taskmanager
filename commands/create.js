@@ -32,6 +32,161 @@ export async function executeCreate(options = {}) {
     return;
   }
 
+  // Verifica se é um reset do projeto
+  if (options.reset) {
+    const { confirm } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: chalk.yellow('⚠️ ATENÇÃO: Isso irá remover todas as tarefas atuais e recriar as tarefas básicas do projeto. Deseja continuar?'),
+        default: false
+      }
+    ]);
+
+    if (!confirm) {
+      console.log(formatInfo('Operação cancelada pelo usuário.'));
+      return;
+    }
+
+    // Criar backup do tasks.json atual
+    const taskmanagerDir = await getTaskManagerDir();
+    const tasksPath = path.join(taskmanagerDir, 'tasks.json');
+    const backupPath = path.join(taskmanagerDir, `tasks_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+
+    try {
+      if (existsSync(tasksPath)) {
+        await fs.copyFile(tasksPath, backupPath);
+        console.log(formatSuccess(`Backup criado em: ${backupPath}`));
+      }
+
+      // Carregar metadados do projeto
+      const projectMetadata = await getProjectMetadata();
+      if (!projectMetadata) {
+        console.log(formatError('Não foi possível carregar os metadados do projeto.'));
+        return;
+      }
+
+      // Resetar tasks.json para estado inicial
+      await saveTasks({ tasks: [], metadata: { totalTasks: 0, lastUpdated: new Date().toISOString() } });
+      console.log(formatSuccess('Arquivo de tarefas resetado com sucesso.'));
+
+      // Perguntar como o usuário deseja recriar as tarefas
+      const { generateMethod } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'generateMethod',
+          message: 'Como você deseja recriar as tarefas do projeto?',
+          choices: [
+            { name: '🤖 Gerar automaticamente com IA', value: 'ai' },
+            { name: '✍️ Criar tarefas manualmente', value: 'manual' }
+          ]
+        }
+      ]);
+
+      if (generateMethod === 'ai') {
+        // Usar IA para gerar tarefas usando os metadados existentes
+        await generateTasksWithAI(projectMetadata, projectMetadata.projectInfo || {});
+      } else {
+        // Criar tarefas manualmente
+        console.log(chalk.blue('\nVamos criar as tarefas manualmente.'));
+        await createTaskManually();
+      }
+
+      return;
+    } catch (error) {
+      console.error(formatError(`Erro ao resetar tarefas: ${error.message}`));
+      return;
+    }
+  }
+
+  // Verifica se é uma restauração de backup
+  if (options.restore) {
+    const taskmanagerDir = await getTaskManagerDir();
+
+    // Lista todos os arquivos de backup
+    const files = await fs.readdir(taskmanagerDir);
+    const backups = files.filter(file => file.startsWith('tasks_backup_'));
+
+    if (backups.length === 0) {
+      console.log(formatWarning('Nenhum backup encontrado.'));
+      return;
+    }
+
+    // Obter informações detalhadas dos backups
+    const backupsInfo = await Promise.all(backups.map(async (backup) => {
+      const stats = await fs.stat(path.join(taskmanagerDir, backup));
+      const fileSizeInKB = (stats.size / 1024).toFixed(2);
+      return {
+        filename: backup,
+        size: fileSizeInKB,
+        date: stats.mtime
+      };
+    }));
+
+    // Ordenar do mais recente para o mais antigo
+    backupsInfo.sort((a, b) => b.date - a.date);
+
+    // Formata as escolhas para o usuário
+    const choices = backupsInfo.map(backup => {
+      const date = backup.filename.replace('tasks_backup_', '').replace('.json', '');
+      const formattedDate = date.replace(/-/g, ':').slice(0, -4); // Remove milissegundos
+      return {
+        name: `📦 ${formattedDate} (${backup.size}KB)`,
+        value: backup.filename
+      };
+    });
+
+    // Adiciona opção para cancelar
+    choices.push({ name: '❌ Cancelar', value: 'cancel' });
+
+    // Pergunta qual backup restaurar
+    const { selectedBackup } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'selectedBackup',
+        message: 'Selecione o backup que deseja restaurar:',
+        choices
+      }
+    ]);
+
+    if (selectedBackup === 'cancel') {
+      console.log(formatInfo('Operação cancelada pelo usuário.'));
+      return;
+    }
+
+    try {
+      // Criar backup do tasks.json atual antes de restaurar
+      const tasksPath = path.join(taskmanagerDir, 'tasks.json');
+      const currentBackupPath = path.join(taskmanagerDir, `tasks_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+
+      if (existsSync(tasksPath)) {
+        await fs.copyFile(tasksPath, currentBackupPath);
+        console.log(formatSuccess(`Backup do estado atual criado em: ${currentBackupPath}`));
+      }
+
+      // Ler o conteúdo do backup selecionado
+      const backupContent = await fs.readFile(path.join(taskmanagerDir, selectedBackup), 'utf-8');
+
+      // Criar o arquivo de restore point
+      const restoreDate = selectedBackup.replace('tasks_backup_', '').replace('.json', '');
+      const restorePointPath = path.join(taskmanagerDir, `tasks.restorepoint.${restoreDate}.json`);
+
+      // Salvar o conteúdo no novo arquivo
+      await fs.writeFile(restorePointPath, backupContent);
+
+      // Atualizar o tasks.json com o conteúdo do backup
+      await fs.writeFile(tasksPath, backupContent);
+
+      console.log(formatSuccess(`Backup restaurado com sucesso!`));
+      console.log(formatInfo(`Restore point criado em: ${restorePointPath}`));
+      console.log(chalk.blue('\nUse o comando "taskmanager list" para ver as tarefas restauradas.'));
+
+    } catch (error) {
+      console.error(formatError(`Erro ao restaurar backup: ${error.message}`));
+    }
+    return;
+  }
+
   // Carrega metadados do projeto
   const projectMetadata = await getProjectMetadata();
 
@@ -182,7 +337,7 @@ async function createTasksForNewProject(projectMetadata) {
  * @returns {Promise<void>}
  */
 async function generateTasksWithAI(projectMetadata, projectInfo) {
-  const spinner = ora('Gerando tarefas com IA...').start();
+  const spinner = ora('Gerando tarefas básicas com IA...').start();
 
   try {
     // Construir descrição do projeto para a IA
@@ -190,15 +345,15 @@ async function generateTasksWithAI(projectMetadata, projectInfo) {
 Nome do Projeto: ${projectMetadata.name}
 Descrição: ${projectMetadata.description}
 Tecnologias: ${projectMetadata.technologies?.join(', ') || 'Não especificadas'}
-Visão Geral: ${projectInfo.vision}
-Público-alvo: ${projectInfo.audience}
-Funcionalidades: ${projectInfo.features}
-Limitações/Requisitos: ${projectInfo.constraints}
-Complexidade: ${projectInfo.complexity}
-Informações Adicionais: ${projectInfo.additionalInfo}
+Visão Geral: ${projectInfo.vision || projectMetadata.description}
+Público-alvo: ${projectInfo.audience || 'Não especificado'}
+Funcionalidades: ${projectInfo.features || 'Não especificadas'}
+Limitações/Requisitos: ${projectInfo.constraints || 'Não especificados'}
+Complexidade: ${projectInfo.complexity || 'Média'}
+Informações Adicionais: ${projectInfo.additionalInfo || ''}
 `;
 
-    // Usar o módulo de IA para gerar tarefas
+    // Usar o módulo de IA para gerar tarefas básicas (sem subtarefas)
     const generatedTasks = await generateTasks(projectDescription, projectMetadata.type);
 
     if (!generatedTasks || generatedTasks.length === 0) {
@@ -207,21 +362,42 @@ Informações Adicionais: ${projectInfo.additionalInfo}
       return;
     }
 
+    // Remover subtarefas das tarefas geradas
+    const basicTasks = generatedTasks.map(task => {
+      const { subtasks, ...basicTask } = task;
+      return basicTask;
+    });
+
     // Salvar as tarefas geradas
     const tasksData = await loadTasks();
+    let nextId = 1;
 
-    for (const task of generatedTasks) {
+    if (tasksData.tasks.length > 0) {
+      nextId = Math.max(...tasksData.tasks.map(t => t.id)) + 1;
+    }
+
+    // Adicionar IDs corretos às novas tarefas
+    basicTasks.forEach((task, index) => {
+      task.id = nextId + index;
+    });
+
+    for (const task of basicTasks) {
       tasksData.tasks.push(task);
     }
 
     await saveTasks(tasksData);
 
-    spinner.succeed(`${generatedTasks.length} tarefas geradas com sucesso!`);
+    spinner.succeed(`${basicTasks.length} tarefas básicas geradas com sucesso!`);
 
     // Mostrar as tarefas geradas
-    console.log(formatTasksTable(generatedTasks, true));
+    console.log(formatTasksTable(basicTasks));
 
-    console.log(formatSuccess('Tarefas salvas com sucesso! Use o comando "taskmanager list" para vê-las.'));
+    console.log(formatSuccess('\nTarefas salvas com sucesso!'));
+    console.log(chalk.blue('\nDicas:'));
+    console.log(chalk.blue('- Use ') + chalk.bold('taskmanager list') + chalk.blue(' para ver todas as tarefas'));
+    console.log(chalk.blue('- Use ') + chalk.bold('taskmanager expand --id=X') + chalk.blue(' para adicionar subtarefas'));
+    console.log(chalk.blue('  • Com ') + chalk.bold('--ai') + chalk.blue(' para análise avançada com Perplexity'));
+    console.log(chalk.blue('  • Com ') + chalk.bold('--no-ai') + chalk.blue(' para criar subtarefas manualmente'));
 
   } catch (error) {
     spinner.fail(`Erro ao gerar tarefas: ${error.message}`);
@@ -353,7 +529,7 @@ Informações adicionais: ${taskContext.additionalInfo}${existingTasksContext}
 async function createTaskManually() {
   console.log(chalk.blue('\nVamos criar uma nova tarefa:'));
 
-  const { createAnother, ...taskData } = await inquirer.prompt([
+  const { createSubtasks, createAnother, ...taskData } = await inquirer.prompt([
     {
       type: 'input',
       name: 'title',
@@ -401,6 +577,12 @@ async function createTaskManually() {
     },
     {
       type: 'confirm',
+      name: 'createSubtasks',
+      message: 'Deseja criar subtarefas para esta tarefa?',
+      default: false
+    },
+    {
+      type: 'confirm',
       name: 'createAnother',
       message: 'Deseja criar outra tarefa?',
       default: false
@@ -410,8 +592,72 @@ async function createTaskManually() {
   try {
     // Adiciona a tarefa
     const newTask = await addTask(taskData);
-
     console.log(formatSuccess(`Tarefa #${newTask.id} criada com sucesso!`));
+
+    // Se o usuário quiser criar subtarefas
+    if (createSubtasks) {
+      let createMoreSubtasks = true;
+      while (createMoreSubtasks) {
+        const { createMore, ...subtaskData } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'title',
+            message: 'Título da subtarefa:',
+            validate: (input) => input.length > 0 ? true : 'O título é obrigatório'
+          },
+          {
+            type: 'input',
+            name: 'description',
+            message: 'Descrição da subtarefa:',
+            default: ''
+          },
+          {
+            type: 'input',
+            name: 'dependencies',
+            message: 'IDs das subtarefas dependentes (ex: 1.1, 1.2) ou tarefas principais (ex: 1, 2):',
+            default: '',
+            filter: (input) => {
+              if (!input) return [];
+              return input.split(',').map(id => id.trim());
+            }
+          },
+          {
+            type: 'confirm',
+            name: 'createMore',
+            message: 'Deseja criar mais uma subtarefa?',
+            default: false
+          }
+        ]);
+
+        // Adiciona a subtarefa
+        const tasksData = await loadTasks();
+        const taskIndex = tasksData.tasks.findIndex(t => t.id === newTask.id);
+
+        if (taskIndex !== -1) {
+          if (!tasksData.tasks[taskIndex].subtasks) {
+            tasksData.tasks[taskIndex].subtasks = [];
+          }
+
+          const subtaskId = tasksData.tasks[taskIndex].subtasks.length + 1;
+          const newSubtask = {
+            id: subtaskId,
+            title: subtaskData.title,
+            description: subtaskData.description,
+            status: 'pending',
+            dependencies: subtaskData.dependencies,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+
+          tasksData.tasks[taskIndex].subtasks.push(newSubtask);
+          await saveTasks(tasksData);
+
+          console.log(formatSuccess(`Subtarefa ${newTask.id}.${subtaskId} criada com sucesso!`));
+        }
+
+        createMoreSubtasks = createMore;
+      }
+    }
 
     // Se o usuário quiser criar outra tarefa
     if (createAnother) {
@@ -419,7 +665,7 @@ async function createTaskManually() {
     } else {
       // Mostrar as tarefas atuais
       const tasksData = await loadTasks();
-      console.log(formatTasksTable(tasksData.tasks, false));
+      console.log(formatTasksTable(tasksData.tasks, true));
     }
   } catch (error) {
     console.log(formatError(`Erro ao criar tarefa: ${error.message}`));

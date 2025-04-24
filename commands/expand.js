@@ -9,7 +9,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
 import { isInitialized, getTaskManagerDir } from '../utils/config.js';
-import { getTaskById, updateTask, addSubtask } from '../utils/tasks.js';
+import { getTaskById, updateTask, addSubtask, loadTasks } from '../utils/tasks.js';
 import { formatSuccess, formatError, formatWarning, formatTask } from '../utils/format.js';
 import { callPerplexityAPI } from '../utils/ai/perplexity.js';
 
@@ -36,9 +36,12 @@ export async function executeExpand(taskId, options = {}) {
     return;
   }
 
+  // Carrega todas as tarefas para referência de dependências
+  const allTasks = await loadTasks();
+
   // Mostra a tarefa atual
   console.log(chalk.cyan('Tarefa Original:'));
-  console.log(formatTask(task));
+  console.log(formatTask(task, allTasks.tasks));
 
   // Determina o número de subtarefas a serem criadas
   const numSubtasks = options.num ? parseInt(options.num) : 3;

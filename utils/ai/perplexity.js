@@ -62,7 +62,7 @@ export async function callPerplexityAPI(taskContext, numSubtasks) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'mistral-8x7b-instruct',
+        model: 'sonar-reasoning-pro',
         messages: [
           { role: 'system', content: 'Você é um especialista em gerenciamento de projetos e análise de tarefas. Sua função é analisar detalhadamente uma tarefa e dividi-la em subtarefas lógicas e bem estruturadas.' },
           { role: 'user', content: prompt }
@@ -108,7 +108,7 @@ function createTaskAnalysisPrompt(taskContext, numSubtasks) {
 
   // Constrói o prompt
   return `
-# Análise de Tarefa e Decomposição em Subtarefas
+# Análise Técnica e Decomposição de Tarefa
 
 ## Detalhes da Tarefa
 - Título: ${title}
@@ -118,38 +118,85 @@ function createTaskAnalysisPrompt(taskContext, numSubtasks) {
 - Estratégia de Teste: ${testStrategy || 'Não fornecida'}
 ${existingSubtasksText}
 
-## Instruções
-1. Realize uma análise aprofundada e detalhada da tarefa acima, considerando:
-   - Complexidade e escopo da tarefa
-   - Principais desafios técnicos
-   - Possíveis dependências e pré-requisitos
-   - Conhecimentos e habilidades necessários
-   - Estimativa de esforço e tempo
+## Diretrizes para Análise
+Analise a tarefa considerando os seguintes aspectos técnicos:
 
-2. Com base nessa análise, decomponha a tarefa em exatamente ${numSubtasks} subtarefas lógicas e bem estruturadas.
-   - As subtarefas devem seguir uma sequência lógica
-   - Cada subtarefa deve ter um título claro e objetivo
-   - Cada subtarefa deve ter uma descrição detalhada
-   - As subtarefas devem cobrir todo o escopo da tarefa principal
-   - Evite criar subtarefas que já existam
+1. Ambiente Docker e Infraestrutura:
+   - Configuração completa de serviços (databases, cache, filas, etc.)
+   - Uso de LocalStack para emulação de serviços cloud
+   - Scripts de automação para setup com um comando
 
-3. Se apropriado, sugira melhorias para a descrição, detalhes ou estratégia de teste da tarefa principal.
+2. Especificações Técnicas:
+   - Bibliotecas e frameworks específicos com versões
+   - Padrões de implementação e design patterns
+   - Estrutura de diretórios e convenções de nomenclatura
+   - Interfaces e contratos de comunicação
+
+3. Clean Architecture:
+   - Separação clara de camadas (adapters, application, domain, infrastructure)
+   - Definição de interfaces entre camadas
+   - Injeção de dependências e inversão de controle
+   - Domain-driven design patterns
+
+4. Automação e DevOps:
+   - Scripts de setup de ambiente
+   - Seeds e migrations
+   - Hooks de git e formatação
+   - CI/CD e validações automatizadas
+
+5. Testes e Qualidade:
+   - Configuração de testes por camada
+   - Mocks e fixtures padronizados
+   - Cobertura de código
+   - Análise estática e linting
+
+6. Documentação:
+   - Geração automática de docs
+   - Swagger/OpenAPI
+   - Diagramas e fluxos
+   - Exemplos de uso
+
+## Instruções para Subtarefas
+Decomponha a tarefa em exatamente ${numSubtasks} subtarefas técnicas, onde cada subtarefa deve:
+
+1. Ter um título técnico específico que indica exatamente o que será feito
+2. Incluir uma descrição detalhada com:
+   - Tecnologias e versões específicas
+   - Estrutura de arquivos e diretórios
+   - Padrões e convenções a seguir
+   - Dependências e pré-requisitos
+   - Critérios de aceitação técnicos
+   - Estratégia de teste específica
+   - Pontos de integração com outras subtarefas
+
+3. Seguir uma sequência lógica de implementação que priorize:
+   - Setup inicial de ambiente e ferramentas
+   - Modelagem de domínio e regras de negócio
+   - Implementação de camadas internas para externas
+   - Integração de serviços e infraestrutura
+   - Automação e documentação
 
 ## Formato da Resposta
 Retorne a resposta em formato JSON com a seguinte estrutura:
 {
-  "analysis": "Análise detalhada da tarefa (texto em markdown)",
+  "analysis": "Análise técnica detalhada da tarefa (texto em markdown)",
   "subtasks": [
     {
-      "title": "Título da subtarefa 1",
-      "description": "Descrição detalhada da subtarefa 1"
-    },
-    ...
+      "title": "Título técnico específico",
+      "description": "Descrição técnica detalhada incluindo todos os pontos solicitados",
+      "technicalSpecs": {
+        "technologies": ["lista de tecnologias com versões"],
+        "patterns": ["padrões a serem seguidos"],
+        "directory": "estrutura de diretórios",
+        "testStrategy": "estratégia específica de testes",
+        "acceptanceCriteria": ["critérios técnicos de aceitação"]
+      }
+    }
   ],
   "taskImprovements": {
-    "description": "Sugestão de melhoria para a descrição da tarefa (opcional)",
-    "details": "Sugestão de melhoria para os detalhes da tarefa (opcional)",
-    "testStrategy": "Sugestão de melhoria para a estratégia de teste (opcional)"
+    "description": "Sugestão de melhoria técnica para a descrição",
+    "details": "Sugestão de especificações técnicas adicionais",
+    "testStrategy": "Sugestão de estratégia de teste mais abrangente"
   }
 }
 

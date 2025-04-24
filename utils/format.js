@@ -176,9 +176,14 @@ export function formatTasksTable(tasks, withSubtasks = false) {
       chalk.cyan('Descrição'),
       chalk.cyan('Dependências')
     ],
+    colWidths: [8, 25, 15, 15, 80, 15],
+    wordWrap: true,
+    wrapOnWordBoundary: true,
     style: {
       head: [], // Remove o destaque padrão
-      border: [] // Remove o destaque da borda
+      border: [], // Remove o destaque da borda
+      'padding-left': 1,
+      'padding-right': 1
     }
   });
 
@@ -189,20 +194,20 @@ export function formatTasksTable(tasks, withSubtasks = false) {
       chalk.bold(task.title),
       formatStatus(task.status),
       formatPriority(task.priority),
-      task.description ? task.description.substring(0, 50) + (task.description.length > 50 ? '...' : '') : '',
+      task.description || '',
       task.dependencies && task.dependencies.length > 0 ? `[${task.dependencies.join(', ')}]` : ''
     ]);
 
-    // Adiciona subtarefas se necessário
+    // Se withSubtasks for true e a tarefa tiver subtarefas
     if (withSubtasks && task.subtasks && task.subtasks.length > 0) {
       for (const subtask of task.subtasks) {
         table.push([
-          chalk.gray(`└─ ${task.id}.${subtask.id}`),
+          chalk.gray(`${task.id}.${subtask.id}`),
           chalk.gray(subtask.title),
           formatStatus(subtask.status),
-          '', // Sem prioridade para subtarefas
-          subtask.description ? chalk.gray(subtask.description.substring(0, 50) + (subtask.description.length > 50 ? '...' : '')) : '',
-          '' // Sem dependências para subtarefas
+          '',
+          chalk.gray(subtask.description || ''),
+          ''
         ]);
       }
     }
