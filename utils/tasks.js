@@ -493,3 +493,10 @@ export async function removeDependency(taskId, dependsOnId) {
 export async function getTasks() {
   return await loadTasks();
 }
+
+function isValidStatus(status) {
+  const validStatuses = ['pending', 'in-progress', 'done', 'cancelled', 'postponed'];
+  return validStatuses.includes(status);
+}
+
+export { isValidStatus };

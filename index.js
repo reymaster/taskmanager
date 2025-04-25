@@ -22,6 +22,7 @@ import { listTasks } from './commands/list.js';
 import { showNextTask } from './commands/next.js';
 import { executeSet } from './commands/set.js';
 import { showCurrentTask } from './commands/current.js';
+import { loadTasks, saveTasks, isValidStatus } from './utils/tasks.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,22 +134,36 @@ program
   `))
   .action(showCurrentTask);
 
-// Comando set status
+// Comando set
 program
   .command('set')
   .description(chalk.cyan(`
-    Atualiza o status de uma tarefa ou subtarefa
+    Define propriedades de uma tarefa
 
-    Permite alterar o status de uma tarefa ou subtarefa de forma interativa,
-    com opções visuais para seleção do novo status.
+    Permite alterar diferentes propriedades de uma tarefa,
+    como status, prioridade, etc.
 
     Exemplos:
-      taskmanager set status 1     # Altera status da tarefa #1
+      taskmanager set status 1 done     # Define o status da tarefa #1 como concluída
+      taskmanager set status 2.1 done   # Define o status da subtarefa #2.1 como concluída
+      taskmanager set priority 1 high   # Define a prioridade da tarefa #1 como alta
   `))
-  .command('status')
+  .argument('<property>', 'Propriedade a ser alterada (status, priority)')
   .argument('<id>', 'ID da tarefa')
-  .description('Altera o status de uma tarefa ou subtarefa')
-  .action(executeSet);
+  .argument('<value>', 'Novo valor para a propriedade')
+  .action(async (property, id, value) => {
+    if (!property || !id || !value) {
+      console.log('Propriedade, ID e valor são obrigatórios');
+      return;
+    }
+
+    if (property === 'status' && !isValidStatus(value)) {
+      console.log('Status inválido');
+      return;
+    }
+
+    executeSet(property, id, value);
+  });
 
 // Comando expand
 program

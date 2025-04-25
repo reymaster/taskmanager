@@ -176,7 +176,7 @@ export function formatTasksTable(tasks, withSubtasks = false) {
       chalk.cyan('Descrição'),
       chalk.cyan('Dependências')
     ],
-    colWidths: [8, 25, 15, 15, 80, 15],
+    colWidths: [8, 25, 15, 15, 50, 15],
     wordWrap: true,
     wrapOnWordBoundary: true,
     style: {
