@@ -1,5 +1,5 @@
 # Diretório de configuração do TaskManager
-.taskmanager/
+.taskmanager/.env
 
 # Dependências
 node_modules/
