@@ -1,0 +1,101 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Analisar requisitos para nova funcionalidade",
+      "description": "Reunir e documentar os requisitos para a nova funcionalidade a ser implementada no TaskManager.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Conduzir sessões de brainstorming com a equipe para definir claramente o escopo e os objetivos da funcionalidade.",
+      "testStrategy": "Revisão de requisitos por stakeholders e ajustes conforme necessário.",
+      "category": "analysis",
+      "createdAt": "2025-04-26T17:06:41.941Z",
+      "updatedAt": "2025-04-26T17:06:41.941Z",
+      "subtasks": []
+    },
+    {
+      "id": 2,
+      "title": "Gerar metadados e identificar funcionalidades existentes",
+      "description": "Analisar o código existente para entender as funcionalidades já implementadas e gerar metadados relevantes.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1
+      ],
+      "details": "Utilizar ferramentas de análise de código para mapear funcionalidades existentes e identificar pontos de integração.",
+      "testStrategy": "Validar a precisão dos metadados gerados comparando com a documentação atual.",
+      "category": "analysis",
+      "createdAt": "2025-04-26T17:06:41.941Z",
+      "updatedAt": "2025-04-26T17:06:41.941Z",
+      "subtasks": []
+    },
+    {
+      "id": 3,
+      "title": "Desenvolver a nova funcionalidade",
+      "description": "Implementar a nova funcionalidade no TaskManager utilizando JavaScript e Node.js.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Criar módulos e componentes necessários para a funcionalidade, garantindo integração com o sistema existente.",
+      "testStrategy": "Escrever testes unitários e de integração para validar a implementação.",
+      "category": "development",
+      "createdAt": "2025-04-26T17:06:41.941Z",
+      "updatedAt": "2025-04-26T17:06:41.941Z",
+      "subtasks": []
+    },
+    {
+      "id": 4,
+      "title": "Testar e validar a nova funcionalidade",
+      "description": "Realizar testes extensivos para garantir que a nova funcionalidade atende aos requisitos e não introduz bugs.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "details": "Executar testes automatizados e manuais, verificando todos os cenários de uso.",
+      "testStrategy": "Usar ferramentas de CI/CD para automação de testes e obter feedback rápido.",
+      "category": "testing",
+      "createdAt": "2025-04-26T17:06:41.941Z",
+      "updatedAt": "2025-04-26T17:06:41.941Z",
+      "subtasks": []
+    },
+    {
+      "id": 5,
+      "title": "Documentar a nova funcionalidade e revisar",
+      "description": "Criar documentação para a nova funcionalidade e realizar uma revisão colaborativa.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "details": "Atualizar a documentação do projeto, incluindo guias de uso, notas de release e documentação técnica.",
+      "testStrategy": "Revisar a documentação com a equipe para garantir clareza e completude.",
+      "category": "documentation",
+      "createdAt": "2025-04-26T17:06:41.941Z",
+      "updatedAt": "2025-04-26T17:06:41.941Z",
+      "subtasks": []
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-26T17:06:41.947Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 5,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 3,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 0
+  }
+}

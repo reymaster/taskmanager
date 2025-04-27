@@ -163,9 +163,10 @@ export function formatTask(task, allTasks = []) {
  * Cria uma tabela de tarefas
  * @param {Array} tasks - Lista de tarefas
  * @param {Boolean} withSubtasks - Incluir subtarefas na tabela
+ * @param {Boolean} highlightNextTask - Destacar a próxima tarefa
  * @returns {String} Tabela formatada
  */
-export function formatTasksTable(tasks, withSubtasks = false) {
+export function formatTasksTable(tasks, withSubtasks = false, highlightNextTask = false) {
   // Cria uma tabela
   const table = new Table({
     head: [
@@ -189,26 +190,39 @@ export function formatTasksTable(tasks, withSubtasks = false) {
 
   // Adiciona as tarefas à tabela
   for (const task of tasks) {
-    table.push([
+    const isNextTask = highlightNextTask && task.status === 'in-progress';
+    const taskRow = [
       chalk.bold(`#${task.id}`),
-      chalk.bold(task.title),
+      task.title,
       formatStatus(task.status),
       formatPriority(task.priority),
       task.description || '',
       task.dependencies && task.dependencies.length > 0 ? `[${task.dependencies.join(', ')}]` : ''
-    ]);
+    ];
+    table.push(taskRow);
 
-    // Se withSubtasks for true e a tarefa tiver subtarefas
+    // Adiciona subtarefas se solicitado
     if (withSubtasks && task.subtasks && task.subtasks.length > 0) {
       for (const subtask of task.subtasks) {
-        table.push([
+        // No comando 'next' (highlightNextTask=true), destacamos a subtarefa pendente da tarefa em andamento
+        // No comando 'current' (highlightNextTask=false), destacamos a subtarefa em andamento
+        const shouldHighlight = highlightNextTask
+          ? (isNextTask && subtask.status === 'pending')
+          : subtask.status === 'in-progress';
+
+        const subtaskTitle = shouldHighlight
+          ? `${chalk.green('>')} ${chalk.gray(subtask.title)}`
+          : `  ${chalk.gray(subtask.title)}`;
+
+        const subtaskRow = [
           chalk.gray(`${task.id}.${subtask.id}`),
-          chalk.gray(subtask.title),
+          subtaskTitle,
           formatStatus(subtask.status),
           '',
           chalk.gray(subtask.description || ''),
           ''
-        ]);
+        ];
+        table.push(subtaskRow);
       }
     }
   }

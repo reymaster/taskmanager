@@ -1,0 +1,135 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Tarefa 1 - frontend",
+      "description": "Descrição da tarefa 1 na categoria frontend",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [],
+      "details": "Detalhes de implementação para a tarefa 1",
+      "testStrategy": "Estratégia de teste para a tarefa 1",
+      "category": "frontend",
+      "createdAt": "2025-04-26T16:31:11.141Z",
+      "updatedAt": "2025-04-26T16:31:11.141Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Subtarefa 1 da Tarefa 1",
+          "description": "Implementação inicial da tarefa 1",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:31:11.141Z",
+          "updatedAt": "2025-04-26T16:31:11.141Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Tarefa 2 - frontend",
+      "description": "Descrição da tarefa 2 na categoria frontend",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Detalhes de implementação para a tarefa 2",
+      "testStrategy": "Estratégia de teste para a tarefa 2",
+      "category": "frontend",
+      "createdAt": "2025-04-26T16:31:11.141Z",
+      "updatedAt": "2025-04-26T16:31:11.141Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Subtarefa 1 da Tarefa 2",
+          "description": "Implementação inicial da tarefa 2",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:31:11.141Z",
+          "updatedAt": "2025-04-26T16:31:11.141Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Tarefa 3 - frontend",
+      "description": "Descrição da tarefa 3 na categoria frontend",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Detalhes de implementação para a tarefa 3",
+      "testStrategy": "Estratégia de teste para a tarefa 3",
+      "category": "frontend",
+      "createdAt": "2025-04-26T16:31:11.141Z",
+      "updatedAt": "2025-04-26T16:31:11.141Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Subtarefa 1 da Tarefa 3",
+          "description": "Implementação inicial da tarefa 3",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:31:11.141Z",
+          "updatedAt": "2025-04-26T16:31:11.141Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Tarefa 4 - testing",
+      "description": "Descrição da tarefa 4 na categoria testing",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Detalhes de implementação para a tarefa 4",
+      "testStrategy": "Estratégia de teste para a tarefa 4",
+      "category": "testing",
+      "createdAt": "2025-04-26T16:31:11.141Z",
+      "updatedAt": "2025-04-26T16:31:11.141Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Subtarefa 1 da Tarefa 4",
+          "description": "Implementação inicial da tarefa 4",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:31:11.141Z",
+          "updatedAt": "2025-04-26T16:31:11.141Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Tarefa 5 - database",
+      "description": "Descrição da tarefa 5 na categoria database",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Detalhes de implementação para a tarefa 5",
+      "testStrategy": "Estratégia de teste para a tarefa 5",
+      "category": "database",
+      "createdAt": "2025-04-26T16:31:11.141Z",
+      "updatedAt": "2025-04-26T16:31:11.141Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Subtarefa 1 da Tarefa 5",
+          "description": "Implementação inicial da tarefa 5",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:31:11.141Z",
+          "updatedAt": "2025-04-26T16:31:11.141Z"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "projectType": "existing",
+    "createdAt": "2025-04-26T16:13:42.984Z",
+    "lastUpdated": "2025-04-26T16:31:11.146Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 10,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 4,
+    "mediumPriorityCount": 1,
+    "lowPriorityCount": 0
+  }
+}

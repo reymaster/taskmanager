@@ -1,0 +1,186 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Analisar Requisitos para Nova Funcionalidade",
+      "description": "Revisar e definir os requisitos detalhados para a nova funcionalidade não especificada.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Conduzir reuniões com stakeholders e revisar documentação existente para entender o escopo completo da nova funcionalidade.",
+      "testStrategy": "Revisar e validar os requisitos com stakeholders para garantir que estão completos e consistentes.",
+      "category": "analysis",
+      "createdAt": "2025-04-26T16:53:32.497Z",
+      "updatedAt": "2025-04-26T16:53:32.497Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Reunião com Stakeholders",
+          "description": "Agendar e realizar uma reunião com os stakeholders para discutir os requisitos.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        },
+        {
+          "id": 2,
+          "title": "Documentação de Requisitos",
+          "description": "Escrever a documentação detalhada dos requisitos da nova funcionalidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Desenvolvimento da Arquitetura e Design",
+      "description": "Desenvolver a arquitetura e o design da nova funcionalidade com base nos requisitos definidos.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Criar diagramas de arquitetura e design detalhando como a funcionalidade se integra ao TaskManager.",
+      "testStrategy": "Realizar revisões de design para validar a arquitetura proposta.",
+      "category": "design",
+      "createdAt": "2025-04-26T16:53:32.497Z",
+      "updatedAt": "2025-04-26T16:53:32.497Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Desenho da Arquitetura",
+          "description": "Criar diagramas de arquitetura para a nova funcionalidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        },
+        {
+          "id": 2,
+          "title": "Revisão de Design",
+          "description": "Revisar o design com a equipe para garantir que atende aos requisitos.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Implementação da Funcionalidade",
+      "description": "Codificar a nova funcionalidade no TaskManager utilizando JavaScript e Node.js.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Implementar a funcionalidade com base no design aprovado, garantindo a integração com o sistema existente.",
+      "testStrategy": "Escrever testes unitários para validar a implementação.",
+      "category": "development",
+      "createdAt": "2025-04-26T16:53:32.497Z",
+      "updatedAt": "2025-04-26T16:53:32.497Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Codificação",
+          "description": "Implementar a funcionalidade conforme os requisitos e design.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        },
+        {
+          "id": 2,
+          "title": "Teste Unitário",
+          "description": "Escrever e executar testes unitários para a nova funcionalidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Testes de Integração e Validação",
+      "description": "Executar testes de integração para garantir que a nova funcionalidade funcione corretamente com o restante do sistema.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "details": "Configurar e executar testes de integração para a nova funcionalidade.",
+      "testStrategy": "Desenvolver casos de teste de integração e executar em ambiente de teste.",
+      "category": "testing",
+      "createdAt": "2025-04-26T16:53:32.497Z",
+      "updatedAt": "2025-04-26T16:53:32.497Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Configuração do Ambiente de Teste",
+          "description": "Configurar o ambiente de teste para executar testes de integração.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        },
+        {
+          "id": 2,
+          "title": "Execução de Testes de Integração",
+          "description": "Executar testes de integração para validar interações entre componentes.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Documentação e Revisão Final",
+      "description": "Documentar a nova funcionalidade e realizar revisão final antes de lançamento.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "details": "Escrever documentação de usuário e técnica e revisar implementações.",
+      "testStrategy": "Revisar a documentação com a equipe e stakeholders para feedback.",
+      "category": "documentation",
+      "createdAt": "2025-04-26T16:53:32.497Z",
+      "updatedAt": "2025-04-26T16:53:32.497Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Documentação de Usuário",
+          "description": "Criar documentação de uso para a nova funcionalidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        },
+        {
+          "id": 2,
+          "title": "Revisão Técnica",
+          "description": "Revisar a implementação e documentação para garantir qualidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:53:32.497Z",
+          "updatedAt": "2025-04-26T16:53:32.497Z"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-26T16:53:32.503Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 15,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 3,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 0
+  }
+}

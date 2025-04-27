@@ -34,7 +34,17 @@ export async function showNextTask() {
         console.log(formatTasksTable([{
           ...nextTask,
           subtasks: [nextSubtask]
-        }], true));
+        }], true, true));
+
+        // Adicionar comandos úteis específicos para a subtarefa
+        console.log(chalk.cyan('\nComandos para a subtarefa:'));
+        console.log(`
+${chalk.cyan('Marcar subtarefa como em progresso:')}
+taskmanager set status ${nextTask.id}.${nextSubtask.id} in-progress
+
+${chalk.cyan('Marcar subtarefa como concluída:')}
+taskmanager set status ${nextTask.id}.${nextSubtask.id} done
+`);
       }
     }
 
@@ -42,13 +52,13 @@ export async function showNextTask() {
     console.log(chalk.bold.blue('\n=== COMANDOS ÚTEIS ==='));
     console.log(`
 ${chalk.cyan('Marcar como em progresso:')}
-taskmanager status --id=${nextTask.id} --status=in-progress
+taskmanager set status ${nextTask.id} in-progress
 
 ${chalk.cyan('Marcar como concluída:')}
-taskmanager status --id=${nextTask.id} --status=done
+taskmanager set status ${nextTask.id} done
 
 ${chalk.cyan('Ver detalhes completos:')}
-taskmanager show --id=${nextTask.id}
+taskmanager show ${nextTask.id}
 `);
 
   } catch (error) {

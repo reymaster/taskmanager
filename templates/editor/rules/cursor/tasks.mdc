@@ -1,0 +1,317 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: Diretrizes para o agente no gerenciamento de tarefas e subtarefas no TaskManager
+globs: utils/tasks.js, commands/create.js, commands/expand.js, commands/show.js
+alwaysApply: true
+---
+
+# Diretrizes para Gerenciamento de Tarefas e Subtarefas
+
+## Princípios Gerais
+
+- **Hierarquia de Tarefas**:
+  - ✅ FAÇA: Trate tarefas como unidades de trabalho autônomas
+  - ✅ FAÇA: Use subtarefas para decompor trabalho complexo
+  - ✅ FAÇA: Mantenha uma relação clara entre tarefa principal e subtarefas
+  - ❌ NÃO FAÇA: Crie subtarefas órfãs ou desconectadas da tarefa principal
+
+  ```javascript
+  // ✅ FAÇA: Mantenha a hierarquia clara
+  // Tarefa principal com subtarefas
+  const task = {
+    id: 1,
+    title: "Implementar autenticação",
+    // Outros campos da tarefa
+    subtasks: [
+      {
+        id: 1, // ID local dentro da tarefa principal
+        title: "Configurar rotas de autenticação",
+        // Outros campos da subtarefa
+      }
+    ]
+  };
+  ```
+
+## Estrutura e Identificação
+
+- **Identificadores de Tarefas**:
+  - ✅ FAÇA: Use IDs numéricos inteiros para tarefas principais
+  - ✅ FAÇA: Use notação de ponto para subtarefas (exemplo: "1.2" para subtarefa 2 da tarefa 1)
+  - ✅ FAÇA: Mantenha IDs sequenciais dentro de seu contexto
+  - ❌ NÃO FAÇA: Duplique IDs ou pule a sequência
+
+  ```javascript
+  // ✅ FAÇA: Use identificação adequada
+  // Ao adicionar subtarefas, atribua IDs sequenciais
+  const newSubtaskId = tasksData.tasks[taskIndex].subtasks.length > 0
+    ? Math.max(...tasksData.tasks[taskIndex].subtasks.map(st => st.id)) + 1
+    : 1;
+  ```
+
+- **Propriedades Obrigatórias**:
+  - ✅ FAÇA: Inclua todas as propriedades obrigatórias em tarefas e subtarefas:
+    - Para tarefas: id, title, description, status, priority, dependencies, createdAt, updatedAt
+    - Para subtarefas: id, title, description, status, createdAt, updatedAt
+  - ✅ FAÇA: Use timestamps ISO para datas
+  - ❌ NÃO FAÇA: Omita campos obrigatórios ou use formatos inconsistentes
+
+  ```javascript
+  // ✅ FAÇA: Inclua todas as propriedades obrigatórias
+  const newTask = {
+    id: newId,
+    title: taskData.title || 'Nova Tarefa',
+    description: taskData.description || '',
+    status: taskData.status || 'pending',
+    priority: taskData.priority || defaultPriority,
+    dependencies: taskData.dependencies || [],
+    details: taskData.details || '',
+    testStrategy: taskData.testStrategy || '',
+    category: taskData.category || 'feature',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    subtasks: []
+  };
+  ```
+
+## Manipulação de Tarefas
+
+- **Criação**:
+  - ✅ FAÇA: Valide todos os campos obrigatórios
+  - ✅ FAÇA: Aplique valores padrão quando necessário
+  - ✅ FAÇA: Gere IDs únicos sequenciais
+  - ❌ NÃO FAÇA: Crie tarefas com dados parciais ou inconsistentes
+
+  ```javascript
+  // ✅ FAÇA: Valide e gere IDs adequadamente
+  const newId = tasksData.tasks.length > 0
+    ? Math.max(...tasksData.tasks.map(t => t.id)) + 1
+    : 1;
+  ```
+
+- **Atualização**:
+  - ✅ FAÇA: Atualize apenas os campos especificados
+  - ✅ FAÇA: Mantenha o ID inalterado
+  - ✅ FAÇA: Atualize o timestamp updatedAt
+  - ❌ NÃO FAÇA: Substitua toda a tarefa sem preservar campos não modificados
+
+  ```javascript
+  // ✅ FAÇA: Atualize preservando campos não modificados
+  const updatedTask = {
+    ...tasksData.tasks[taskIndex],
+    ...taskData,
+    updatedAt: new Date().toISOString()
+  };
+
+  // Mantenha o ID original
+  updatedTask.id = taskId;
+  ```
+
+- **Exclusão**:
+  - ✅ FAÇA: Verifique dependências antes de excluir
+  - ✅ FAÇA: Atualize referências após exclusão
+  - ❌ NÃO FAÇA: Exclua tarefas sem verificar impactos
+
+  ```javascript
+  // ✅ FAÇA: Verifique dependências antes de excluir
+  const dependentTasks = tasksData.tasks.filter(t =>
+    t.dependencies && t.dependencies.includes(taskId)
+  );
+
+  if (dependentTasks.length > 0) {
+    console.log(formatWarning(`Tarefa #${taskId} não pode ser removida pois outras tarefas dependem dela.`));
+    return false;
+  }
+  ```
+
+## Manipulação de Subtarefas
+
+- **Criação de Subtarefas**:
+  - ✅ FAÇA: Verifique se a tarefa pai existe
+  - ✅ FAÇA: Atribua IDs sequenciais dentro do contexto da tarefa pai
+  - ✅ FAÇA: Inclua todos os campos obrigatórios
+  - ❌ NÃO FAÇA: Crie subtarefas para tarefas inexistentes
+
+  ```javascript
+  // ✅ FAÇA: Verifique se a tarefa pai existe antes de adicionar subtarefas
+  const taskIndex = tasksData.tasks.findIndex(t => t.id === taskId);
+  if (taskIndex === -1) {
+    return null;
+  }
+
+  // Inicialize o array de subtarefas se não existir
+  if (!tasksData.tasks[taskIndex].subtasks) {
+    tasksData.tasks[taskIndex].subtasks = [];
+  }
+  ```
+
+- **Atualização de Subtarefas**:
+  - ✅ FAÇA: Verifique existência da tarefa pai e da subtarefa
+  - ✅ FAÇA: Atualize o timestamp updatedAt da subtarefa e da tarefa pai
+  - ❌ NÃO FAÇA: Mova subtarefas entre tarefas pai diferentes
+
+  ```javascript
+  // ✅ FAÇA: Atualize tarefa pai e subtarefa
+  tasksData.tasks[taskIndex].subtasks[subtaskIndex].status = newStatus;
+  tasksData.tasks[taskIndex].subtasks[subtaskIndex].updatedAt = now;
+  tasksData.tasks[taskIndex].updatedAt = now;
+  ```
+
+- **Propagação de Status**:
+  - ✅ FAÇA: Considere atualizar subtarefas quando a tarefa pai for marcada como concluída
+  - ✅ FAÇA: Pergunte ao usuário antes de propagar status
+  - ❌ NÃO FAÇA: Propague status automaticamente sem confirmação
+
+  ```javascript
+  // ✅ FAÇA: Propague status com confirmação
+  if (newStatus === 'completed' && task.subtasks && task.subtasks.length > 0) {
+    const { updateSubtasks } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'updateSubtasks',
+        message: 'Deseja marcar todas as subtarefas como concluídas também?',
+        default: true
+      }
+    ]);
+
+    if (updateSubtasks) {
+      task.subtasks = task.subtasks.map(sub => ({
+        ...sub,
+        status: 'completed',
+        updatedAt: new Date().toISOString()
+      }));
+    }
+  }
+  ```
+
+## Expansão de Tarefas
+
+- **Análise de Complexidade**:
+  - ✅ FAÇA: Analise o contexto completo da tarefa para expansão
+  - ✅ FAÇA: Use IA para sugerir decomposição lógica quando disponível
+  - ✅ FAÇA: Considere dependências entre subtarefas
+  - ❌ NÃO FAÇA: Divida tarefas de forma arbitrária ou inconsistente
+
+  ```javascript
+  // ✅ FAÇA: Use análise da tarefa para expansão
+  const taskContext = {
+    title: task.title,
+    description: task.description || '',
+    details: task.details || '',
+    category: task.category || '',
+    testStrategy: task.testStrategy || '',
+    existingSubtasks: task.subtasks || []
+  };
+
+  // Use IA para análise avançada quando disponível
+  const analysisResult = await callPerplexityAPI(taskContext, numSubtasks);
+  ```
+
+- **Subtarefas Balanceadas**:
+  - ✅ FAÇA: Crie subtarefas com escopo similar
+  - ✅ FAÇA: Mantenha subtarefas focadas em uma única responsabilidade
+  - ✅ FAÇA: Defina dependências entre subtarefas quando necessário
+  - ❌ NÃO FAÇA: Crie subtarefas desproporcionais ou genéricas demais
+  ```javascript
+  // ✅ FAÇA: Defina subtarefas bem equilibradas
+  const subtasksToAdd = [
+    {
+      title: "Configurar estrutura do banco de dados",
+      description: "Criar tabelas, índices e relacionamentos necessários"
+    },
+    {
+      title: "Implementar queries de acesso",
+      description: "Desenvolver funções para CRUD de dados"
+    },
+    {
+      title: "Criar testes de integração",
+      description: "Garantir que a persistência funcione corretamente"
+    }
+  ];
+  ```
+
+## Visualização e Navegação
+
+- **Formatação de Saída**:
+  - ✅ FAÇA: Mostre claramente a hierarquia entre tarefas e subtarefas
+  - ✅ FAÇA: Use indentação e formatação visual para indicar relações
+  - ✅ FAÇA: Inclua indicadores de status distintos
+  - ❌ NÃO FAÇA: Apresente tarefas e subtarefas sem distinção clara
+
+  ```javascript
+  // ✅ FAÇA: Formate adequadamente a exibição
+  if (task.subtasks && task.subtasks.length > 0) {
+    output += `\n${chalk.bold('Subtarefas:')}\n`;
+    for (const subtask of task.subtasks) {
+      const statusIcon = subtask.status === 'done'
+        ? chalk.green('✅')
+        : subtask.status === 'in-progress'
+          ? chalk.blue('🔄')
+          : chalk.yellow('⏳');
+
+      output += `${statusIcon} ${subtask.id}. ${subtask.title}\n`;
+
+      if (subtask.description) {
+        output += `   ${chalk.gray(subtask.description)}\n`;
+      }
+    }
+  }
+  ```
+
+- **Navegação entre Tarefas**:
+  - ✅ FAÇA: Permita navegar facilmente entre tarefas e subtarefas relacionadas
+  - ✅ FAÇA: Forneça links ou comandos para acessar tarefas dependentes
+  - ✅ FAÇA: Exiba informações de contexto relevantes
+  - ❌ NÃO FAÇA: Force o usuário a memorizar IDs ou relacionamentos
+
+  ```javascript
+  // ✅ FAÇA: Facilite a navegação entre tarefas
+  console.log(chalk.bold.blue('\n=== COMANDOS ÚTEIS ==='));
+  console.log(`
+  ${chalk.cyan('Ver tarefa principal:')}
+  taskmanager show ${parentTaskId}
+
+  ${chalk.cyan('Ver detalhes da subtarefa:')}
+  taskmanager show ${taskId}.${subtaskId}
+
+  ${chalk.cyan('Atualizar status da subtarefa:')}
+  taskmanager set status ${taskId}.${subtaskId}
+  `);
+  ```
+
+## Considerações Avançadas
+
+- **Agrupamento e Categorização**:
+  - ✅ FAÇA: Use categorias para agrupar tarefas relacionadas
+  - ✅ FAÇA: Permita filtrar e visualizar por categoria
+  - ❌ NÃO FAÇA: Misture categorias inconsistentemente
+
+  ```javascript
+  // ✅ FAÇA: Use categorias consistentemente
+  const task = {
+    // Outros campos
+    category: 'backend', // Categoria da tarefa: backend, frontend, database, etc.
+  };
+  ```
+
+- **Documentação e Contexto**:
+  - ✅ FAÇA: Mantenha descrições detalhadas e contextuais
+  - ✅ FAÇA: Inclua detalhes técnicos e estratégias de teste
+  - ✅ FAÇA: Documente decisões e abordagens
+  - ❌ NÃO FAÇA: Use descrições vagas ou genéricas demais
+
+  ```javascript
+  // ✅ FAÇA: Inclua contexto detalhado
+  const task = {
+    // Outros campos
+    details: "Utilizar JWT para tokens, Redis para armazenamento de sessão, e implementar refresh tokens com rotação. Considerar proteção contra CSRF.",
+    testStrategy: "Usar Jest para testes unitários e Supertest para testes de integração. Cobrir casos de sucesso, falha de credenciais e expiração de token."
+  };
+  ```
+
+Consulte `utils/tasks.js`, `commands/create.js`, `commands/expand.js` e `commands/show.js` para implementações e maiores detalhes sobre o gerenciamento de tarefas e subtarefas no TaskManager.
+
+Acompanhe o arquivo [commands.mdc](mdc:.cursor/rules/commands.mdc) para saber mais sobre os comandos da CLI.

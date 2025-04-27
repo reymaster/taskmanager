@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "projectType": "existing",
+  "taskSettings": {
+    "defaultPriority": "medium",
+    "defaultSubtasks": 3,
+    "statusOptions": [
+      "pending",
+      "in-progress",
+      "done",
+      "cancelled",
+      "deferred"
+    ],
+    "priorityOptions": [
+      "high",
+      "medium",
+      "low"
+    ]
+  },
+  "ai": {
+    "enabled": false,
+    "provider": null,
+    "apiKey": null,
+    "model": null
+  },
+  "display": {
+    "compactMode": false,
+    "showDependencies": true,
+    "showSubtasks": true
+  },
+  "createdAt": "2025-04-26T16:15:05.605Z",
+  "lastUpdated": "2025-04-26T16:15:05.605Z"
+}

@@ -14,6 +14,8 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import { existsSync } from 'fs';
 import { createInitialConfig } from '../utils/config.js';
+import { generateAgentInstructions } from '../utils/ai/index.js';
+import fsExtra from 'fs-extra';
 
 // Obter o diretório atual do módulo
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +27,9 @@ const __dirname = path.dirname(__filename);
  */
 export async function initializeTaskManager(options = {}) {
   console.log(chalk.cyan.bold('\n📋 Inicializando TaskManager...\n'));
+  console.log('__dirname:', __dirname);
+  console.log('process.cwd():', process.cwd());
+  console.log('import.meta.url:', import.meta.url);
 
   // Verifica se o TaskManager já está inicializado
   const taskmanagerDir = path.join(process.cwd(), '.taskmanager');
@@ -46,20 +51,84 @@ export async function initializeTaskManager(options = {}) {
     }
   }
 
-  // Determina o tipo de projeto (novo ou existente)
-  const projectType = await determineProjectType(options);
+  try {
+    console.log('ETAPA 1: Determinando tipo de projeto...');
+    // Determina o tipo de projeto (novo ou existente)
+    const projectType = await determineProjectType(options);
 
-  // Cria a estrutura do TaskManager
-  await createTaskManagerStructure(taskmanagerDir, projectType);
+    console.log('ETAPA 2: Criando estrutura do TaskManager...');
+    // Cria a estrutura do TaskManager
+    await createTaskManagerStructure(taskmanagerDir, projectType);
 
-  // Configura o projeto com base no tipo
-  await configureProject(projectType, taskmanagerDir);
+    console.log('ETAPA 3: Configurando projeto...');
+    // Configura o projeto com base no tipo
+    await configureProject(projectType, taskmanagerDir);
 
-  console.log(chalk.green.bold('\n✅ TaskManager inicializado com sucesso!'));
-  console.log(chalk.blue(`\nPara começar a gerenciar tarefas, experimente os seguintes comandos:`));
-  console.log(chalk.cyan(`\n  - taskmanager create`));
-  console.log(chalk.cyan(`  - taskmanager list`));
-  console.log(chalk.cyan(`  - taskmanager next\n`));
+    console.log('ETAPA 4: Gerando instruções para Copilot...');
+    // Gera instruções para o Copilot em .github (padrão)
+    // Para outros agentes/editores, basta alterar o destino e o nome do arquivo
+    try {
+      await generateAgentInstructions('copilot', '.github');
+      console.log('Instruções para Copilot geradas com sucesso.');
+    } catch (error) {
+      console.log(chalk.yellow(`Aviso: Não foi possível gerar instruções para Copilot: ${error.message}`));
+    }
+
+    console.log('ETAPA 5: Copiando regras do cursor...');
+    // Copia as regras do cursor para .cursor/rules (sem sobrescrever existentes)
+    try {
+      const cursorRulesSrc = path.join(__dirname, '..', 'templates', 'editor', 'rules', 'cursor');
+      console.log('Caminho absoluto para regras:', cursorRulesSrc);
+      console.log('Este diretório existe?', existsSync(cursorRulesSrc) ? 'SIM' : 'NÃO');
+
+      const cursorRulesDest = path.resolve('.cursor/rules');
+      console.log('Destino das regras:', cursorRulesDest);
+      console.log('Diretório de destino existe?', existsSync(cursorRulesDest) ? 'SIM' : 'NÃO');
+
+      console.log('Criando diretório de destino se não existir...');
+      await fsExtra.ensureDir(cursorRulesDest);
+      console.log('Diretório de destino criado/verificado.');
+
+      if (await fsExtra.pathExists(cursorRulesSrc)) {
+        console.log('Diretório de origem existe, lendo arquivos...');
+        const ruleFiles = await fsExtra.readdir(cursorRulesSrc);
+        console.log('Arquivos encontrados:', ruleFiles);
+
+        for (const file of ruleFiles) {
+          if (file.endsWith('.mdc')) {
+            const destFile = path.join(cursorRulesDest, file);
+            console.log(`Verificando se destino existe para ${file}:`, await fsExtra.pathExists(destFile) ? 'SIM' : 'NÃO');
+
+            if (!await fsExtra.pathExists(destFile)) {
+              console.log(`Copiando ${file}...`);
+              await fsExtra.copyFile(path.join(cursorRulesSrc, file), destFile);
+              console.log(`${file} copiado com sucesso.`);
+            } else {
+              console.log(`${file} já existe no destino, ignorando.`);
+            }
+          }
+        }
+        console.log(chalk.green('✅ Regras do Cursor copiadas com sucesso.'));
+      } else {
+        console.log(chalk.yellow('⚠️ Diretório de regras do Cursor não encontrado. Ignorando esta etapa.'));
+      }
+    } catch (error) {
+      console.log(chalk.yellow(`⚠️ Não foi possível copiar as regras do Cursor: ${error.message}`));
+      console.log(chalk.yellow('Stacktrace:'), error.stack);
+      console.log(chalk.yellow('Esta etapa não é crítica e o TaskManager continuará funcionando normalmente.'));
+    }
+
+    console.log(chalk.green.bold('\n✅ TaskManager inicializado com sucesso!'));
+    console.log(chalk.blue(`\nPara começar a gerenciar tarefas, experimente os seguintes comandos:`));
+    console.log(chalk.cyan(`\n  - taskmanager create`));
+    console.log(chalk.cyan(`  - taskmanager list`));
+    console.log(chalk.cyan(`  - taskmanager next\n`));
+  } catch (error) {
+    console.log(chalk.red(`\n❌ Erro ao inicializar TaskManager: ${error.message}`));
+    console.log(chalk.red('Stacktrace completo:'));
+    console.log(error.stack);
+    throw error;
+  }
 }
 
 /**
@@ -207,34 +276,6 @@ async function configureProject(projectType, taskmanagerDir) {
   await fs.writeFile(
     path.join(taskmanagerDir, 'config.json'),
     JSON.stringify(config, null, 2)
-  );
-
-  // Verifica se o arquivo de metadados já existe
-  const metadataPath = path.join(taskmanagerDir, 'project-metadata.json');
-  let existingTechnologies = [];
-
-  if (existsSync(metadataPath)) {
-    try {
-      const existingMetadata = JSON.parse(await fs.readFile(metadataPath, 'utf-8'));
-      existingTechnologies = existingMetadata.technologies || [];
-    } catch (error) {
-      console.error(`Erro ao ler metadados existentes: ${error.message}`);
-    }
-  }
-
-  // Cria o arquivo de metadados do projeto
-  const projectMetadata = {
-    type: projectType,
-    name: path.basename(process.cwd()),
-    description: 'Projeto gerenciado pelo TaskManager',
-    technologies: existingTechnologies,
-    createdAt: new Date().toISOString(),
-    lastUpdated: new Date().toISOString()
-  };
-
-  await fs.writeFile(
-    metadataPath,
-    JSON.stringify(projectMetadata, null, 2)
   );
 }
 

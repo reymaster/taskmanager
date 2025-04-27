@@ -1,54 +1,48 @@
-import chalk from 'chalk';
 import { getProjectMetadata } from '../utils/config.js';
 import { loadTasks } from '../utils/tasks.js';
-import { formatTask, formatTasksTable } from '../utils/format.js';
+import { formatTask, formatTasksTable, formatWarning } from '../utils/format.js';
+import chalk from 'chalk';
 
 /**
- * Comando para mostrar a tarefa atual em desenvolvimento
+ * Mostra a tarefa atualmente em desenvolvimento
  */
 export async function showCurrentTask() {
   try {
-    // Carregar metadados do projeto
-    const projectMetadata = await getProjectMetadata();
-    if (!projectMetadata) {
-      console.error(chalk.red('Projeto não inicializado. Execute taskmanager init primeiro.'));
+    const metadata = await getProjectMetadata();
+    if (!metadata) {
+      console.log(formatWarning('Projeto não inicializado. Execute "taskmanager init" primeiro.'));
       return;
     }
 
-    // Carregar tarefas
-    const { tasks } = await loadTasks();
-    if (!tasks || tasks.length === 0) {
-      console.log(chalk.yellow('Nenhuma tarefa encontrada.'));
+    const tasksData = await loadTasks();
+    if (!tasksData || !tasksData.tasks || tasksData.tasks.length === 0) {
+      console.log(formatWarning('Nenhuma tarefa encontrada.'));
       return;
     }
 
-    // Encontrar a tarefa em desenvolvimento
-    const currentTask = tasks.find(task => task.status === 'in-progress');
+    const currentTask = tasksData.tasks.find(task => task.status === 'in-progress');
+
     if (!currentTask) {
-      console.log(chalk.yellow('Não há tarefas em desenvolvimento no momento.'));
+      console.log(formatWarning('Nenhuma tarefa em desenvolvimento no momento.'));
       return;
     }
 
-    // Exibir a tarefa formatada
-    console.log(chalk.bold.cyan('\n=== TAREFA EM DESENVOLVIMENTO ===\n'));
-    console.log(formatTask(currentTask, tasks));
+    // Cabeçalho da tabela
+    console.log(chalk.bold.blue('\n=== TAREFA ATUAL ===\n'));
 
-    // Se houver subtarefas, encontrar a subtarefa em desenvolvimento
+    // Formata e exibe a tarefa atual
+    console.log(formatTask(currentTask, tasksData.tasks));
+
+    // Exibe a tarefa e suas subtarefas em formato de tabela
     if (currentTask.subtasks && currentTask.subtasks.length > 0) {
-      const currentSubtask = currentTask.subtasks.find(st => st.status === 'in-progress');
-      if (currentSubtask) {
-        console.log(chalk.bold.cyan('\nSubtarefa em Desenvolvimento:'));
-        console.log(formatTasksTable([{
-          ...currentTask,
-          subtasks: [currentSubtask]
-        }], true));
-      }
+      console.log(chalk.bold('\nSubtarefas:'));
+      console.log(formatTasksTable([currentTask], true, true));
     }
 
-    // Exibir comandos úteis
+    // Exibe comandos úteis
     console.log(chalk.bold.blue('\n=== COMANDOS ÚTEIS ==='));
     console.log(`
-${chalk.cyan('Marcar como concluída:')}
+${chalk.cyan('Atualizar status da tarefa:')}
 taskmanager set status ${currentTask.id}
 
 ${chalk.cyan('Ver detalhes completos:')}
@@ -59,6 +53,6 @@ taskmanager expand ${currentTask.id}
 `);
 
   } catch (error) {
-    console.error(chalk.red(`Erro ao mostrar tarefa em desenvolvimento: ${error.message}`));
+    console.error('Erro ao mostrar tarefa atual:', error);
   }
 }

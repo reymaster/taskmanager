@@ -1,0 +1,93 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Configuração inicial do ambiente de desenvolvimento",
+      "description": "Configurar o ambiente de desenvolvimento para o projeto TaskManager, incluindo a instalação de Node.js, configuração do gerenciador de pacotes e inicialização do repositório Git.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Instalar Node.js e npm, configurar o repositório Git e definir o arquivo .gitignore para o projeto.",
+      "testStrategy": "Verificar se o ambiente de desenvolvimento está configurado corretamente através da execução de um script de teste básico.",
+      "category": "setup",
+      "createdAt": "2025-04-26T16:39:19.699Z",
+      "updatedAt": "2025-04-26T16:39:19.699Z"
+    },
+    {
+      "id": 2,
+      "title": "Implementação do CLI básico",
+      "description": "Desenvolver uma estrutura básica de linha de comando para o TaskManager, permitindo a execução de comandos básicos como adicionar, listar e remover tarefas.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Utilizar o Node.js para criar uma interface de linha de comando que suporta comandos básicos para a gestão de tarefas.",
+      "testStrategy": "Criar testes unitários para cada comando implementado, garantindo que todos os comandos do CLI funcionem como esperado.",
+      "category": "backend",
+      "createdAt": "2025-04-26T16:39:19.699Z",
+      "updatedAt": "2025-04-26T16:39:19.699Z"
+    },
+    {
+      "id": 3,
+      "title": "Integração com API de IA para geração automática de tarefas",
+      "description": "Integrar o TaskManager com uma API de inteligência artificial que sugere e cria automaticamente tarefas baseadas em dados de projeto.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Selecionar uma API de IA adequada, integrar com o TaskManager e implementar a lógica para geração automática de tarefas.",
+      "testStrategy": "Testar a integração com a API de IA através de casos de uso simulados para verificar a precisão e relevância das tarefas geradas.",
+      "category": "backend",
+      "createdAt": "2025-04-26T16:39:19.699Z",
+      "updatedAt": "2025-04-26T16:39:19.699Z"
+    },
+    {
+      "id": 4,
+      "title": "Criação de documentação do usuário",
+      "description": "Desenvolver documentação clara e concisa para usuários do TaskManager, detalhando o uso do CLI e suas funcionalidades.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Criar documentação que inclua exemplos de uso, descrição dos comandos e explicação das funcionalidades principais.",
+      "testStrategy": "Revisar a documentação com membros da equipe que não participaram do desenvolvimento para garantir clareza e usabilidade.",
+      "category": "documentation",
+      "createdAt": "2025-04-26T16:39:19.699Z",
+      "updatedAt": "2025-04-26T16:39:19.699Z"
+    },
+    {
+      "id": 5,
+      "title": "Implementação de personalização para diferentes fluxos de trabalho",
+      "description": "Desenvolver a funcionalidade que permite aos usuários personalizar o TaskManager para se adaptar a diferentes fluxos de trabalho de projeto.",
+      "status": "pending",
+      "priority": "low",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Permitir que usuários configurem o TaskManager para personalizar a forma como as tarefas são gerenciadas e visualizadas.",
+      "testStrategy": "Testar a personalização com cenários de fluxo de trabalho comuns para garantir flexibilidade e funcionalidade.",
+      "category": "backend",
+      "createdAt": "2025-04-26T16:39:19.699Z",
+      "updatedAt": "2025-04-26T16:39:19.699Z"
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-26T16:39:19.700Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 5,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 2,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 1
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Analisar e mapear funcionalidades existentes",
+      "description": "Revise o código atual do TaskManager para identificar funcionalidades já implementadas e documentar as áreas que precisam de melhorias.",
+      "status": "done",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Analise o repositório do TaskManager, focando na estrutura de código e funcionalidades de CLI existentes.",
+      "testStrategy": "Verificação manual e revisão de código para assegurar que a análise cobre todas as áreas relevantes.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-27T04:55:57.229Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Revisar código fonte",
+          "description": "Faça uma revisão detalhada do código fonte atual para mapear funcionalidades.",
+          "status": "done",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-27T04:56:00.478Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Desenvolver funcionalidade de scaneamento profundo de código",
+      "description": "Implemente a funcionalidade de scaneamento profundo de código no TaskManager utilizando algoritmos de IA.",
+      "status": "done",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Criar um algoritmo de IA para scaneamento profundo de código.",
+      "testStrategy": "Testar a funcionalidade com um conjunto de testes unitários.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-26T19:18:51.454Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implementar algoritmo de IA",
+          "description": "Desenvolva e integre o algoritmo de IA para o scaneamento profundo de código.",
+          "status": "done",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-26T19:19:37.485Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Desenvolver funcionalidade de geração automática de tarefas",
+      "description": "Implemente a funcionalidade de geração automática de tarefas no TaskManager utilizando algoritmos de IA.",
+      "status": "in-progress",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Utilize Node.js e bibliotecas de IA para integrar a geração automática de tarefas no CLI.",
+      "testStrategy": "Teste unitário e de integração para garantir que a funcionalidade atenda aos requisitos especificados.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-26T19:10:57.985Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implementar algoritmo de IA",
+          "description": "Desenvolva e integre o algoritmo de IA para a geração de tarefas.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-27T04:59:48.960Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Criar metadados para priorização de tarefas",
+      "description": "Desenvolva um sistema de metadados para ajudar na priorização e organização das tarefas geradas automaticamente.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "details": "Defina um esquema de metadados que inclua prioridade, tempo estimado e complexidade.",
+      "testStrategy": "Teste funcional para verificar que os metadados são criados e utilizados corretamente.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-26T17:22:12.856Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Definir esquema de metadados",
+          "description": "Crie um esquema detalhado para os metadados das tarefas.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-26T17:22:12.856Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Implementar sistema de sugestões de melhorias",
+      "description": "Desenvolva uma funcionalidade que sugira melhorias para as tarefas atuais com base em boas práticas e dados de IA.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "details": "Integre um módulo que analisa as tarefas existentes e sugere melhorias.",
+      "testStrategy": "Teste de sistema para assegurar que as sugestões são relevantes e precisas.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-26T17:22:12.856Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Desenvolver módulo de análise de tarefas",
+          "description": "Crie o módulo que irá analisar e sugerir melhorias nas tarefas.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-26T17:22:12.856Z"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Revisão e documentação da nova funcionalidade",
+      "description": "Conduza uma revisão final das funcionalidades implementadas e atualize a documentação do projeto.",
+      "status": "pending",
+      "priority": "low",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "details": "Revise a implementação para assegurar qualidade e atualize a documentação com as novas funcionalidades.",
+      "testStrategy": "Revisão por pares e validação da documentação atualizada.",
+      "category": "documentation",
+      "createdAt": "2025-04-26T17:22:12.856Z",
+      "updatedAt": "2025-04-26T17:22:12.856Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Atualizar documentação do projeto",
+          "description": "Documente as novas funcionalidades e atualizações feitas no TaskManager.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:22:12.856Z",
+          "updatedAt": "2025-04-26T17:22:12.856Z"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-27T04:59:48.968Z",
+    "taskCount": 6,
+    "completedCount": 4,
+    "pendingCount": 7,
+    "inProgressCount": 1,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 3,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 1
+  }
+}

@@ -16,6 +16,13 @@ import {
   getAIModel,
   hasApiKey
 } from './env-loader.js';
+import fs from 'fs-extra';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obter o diretório atual do módulo
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Gera tarefas com base na descrição do projeto usando IA
@@ -88,6 +95,50 @@ export async function generateTasks(projectDescription, projectType, taskCount =
     console.error(chalk.red(`Erro ao usar o provedor de IA: ${error.message}`));
     console.log(chalk.blue('Usando modo de simulação para geração de tarefas.'));
     return simulateTasks(projectDescription, projectType, taskCount);
+  }
+}
+
+/**
+ * Compila regras de IA para um agente específico em um arquivo Markdown.
+ * @param {string} agent Nome do agente (ex: 'copilot', 'claude', 'gemini')
+ * @param {string} destinationFolder Pasta de destino (ex: '.github', '.vscode', '.cursor')
+ * @param {string} [fileName] Nome do arquivo de instrução (padrão: `${agent}-instructions.md`)
+ */
+export async function generateAgentInstructions(agent, destinationFolder, fileName) {
+  try {
+    const rulesDir = path.join(__dirname, '..', '..', 'templates', 'editor', 'rules', 'cursor');
+    console.log('Tentando ler regras de IA de:', rulesDir);
+
+    if (!await fs.pathExists(rulesDir)) {
+      console.log(chalk.yellow(`⚠️ Diretório de regras ${rulesDir} não encontrado. Pulando compilação de regras.`));
+      return null;
+    }
+
+    const files = await fs.readdir(rulesDir);
+    const mdcFiles = files.filter(f => f.endsWith('.mdc'));
+
+    if (mdcFiles.length === 0) {
+      console.log(chalk.yellow('⚠️ Nenhum arquivo .mdc encontrado para compilação. Pulando esta etapa.'));
+      return null;
+    }
+
+    let compiled = `# Instruções para o agente ${agent}\n\n`;
+    for (const file of mdcFiles) {
+      const content = await fs.readFile(path.join(rulesDir, file), 'utf-8');
+      compiled += `\n---\n## ${file}\n\n`;
+      compiled += content.replace(/^---[\s\S]*?---\n/, ''); // Remove frontmatter YAML se houver
+    }
+
+    const destDir = path.resolve(destinationFolder);
+    await fs.ensureDir(destDir);
+    const destFile = path.join(destDir, fileName || `${agent}-instructions.md`);
+    await fs.writeFile(destFile, compiled, 'utf-8');
+    console.log(chalk.green(`✅ Instruções para ${agent} geradas com sucesso em ${destFile}`));
+    return destFile;
+  } catch (error) {
+    console.log(chalk.yellow(`⚠️ Erro ao gerar instruções para ${agent}: ${error.message}`));
+    console.log(chalk.yellow('Esta etapa não é crítica e o TaskManager continuará funcionando normalmente.'));
+    return null;
   }
 }
 

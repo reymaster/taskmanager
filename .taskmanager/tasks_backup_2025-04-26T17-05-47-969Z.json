@@ -1,0 +1,146 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Análise e definição de requisitos para nova funcionalidade",
+      "description": "Realizar uma análise detalhada dos requisitos para a nova funcionalidade, considerando integração com IA e automação de tarefas.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Conduzir reuniões com stakeholders para coletar requisitos e definir o escopo.",
+      "testStrategy": "Revisão por pares dos requisitos documentados.",
+      "category": "analysis",
+      "createdAt": "2025-04-26T17:03:31.132Z",
+      "updatedAt": "2025-04-26T17:03:31.132Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Coleta de requisitos",
+          "description": "Entrevistar stakeholders para entender as necessidades.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:03:31.132Z",
+          "updatedAt": "2025-04-26T17:03:31.132Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Desenvolvimento do módulo de integração com IA",
+      "description": "Implementar a integração com agentes de IA para geração automática de tarefas.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Utilizar APIs de IA para integrar funcionalidades inteligentes ao TaskManager.",
+      "testStrategy": "Testes unitários e de integração para validar a comunicação com a API de IA.",
+      "category": "backend",
+      "createdAt": "2025-04-26T17:03:31.132Z",
+      "updatedAt": "2025-04-26T17:03:31.132Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Configuração da API de IA",
+          "description": "Configurar e autenticar a API de IA no sistema.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:03:31.132Z",
+          "updatedAt": "2025-04-26T17:03:31.132Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Implementação da interface CLI para nova funcionalidade",
+      "description": "Desenvolver a interface de linha de comando para permitir o uso da nova funcionalidade pelo usuário final.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Criar comandos CLI que interajam com o módulo de IA e automação.",
+      "testStrategy": "Testes manuais e automatizados de usabilidade para a interface CLI.",
+      "category": "frontend",
+      "createdAt": "2025-04-26T17:03:31.132Z",
+      "updatedAt": "2025-04-26T17:03:31.132Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Design dos comandos CLI",
+          "description": "Definir a sintaxe e estrutura dos novos comandos CLI.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:03:31.132Z",
+          "updatedAt": "2025-04-26T17:03:31.132Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Testes e validação da nova funcionalidade",
+      "description": "Realizar testes abrangentes para garantir que a nova funcionalidade funciona conforme o esperado e é robusta.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2,
+        3
+      ],
+      "details": "Incluir testes unitários, de integração e de aceitação pelos usuários.",
+      "testStrategy": "Executar testes automatizados e coletar feedback dos usuários para melhorias.",
+      "category": "testing",
+      "createdAt": "2025-04-26T17:03:31.132Z",
+      "updatedAt": "2025-04-26T17:03:31.132Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Teste de integração",
+          "description": "Validar a integração entre o módulo de IA e a interface CLI.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:03:31.132Z",
+          "updatedAt": "2025-04-26T17:03:31.132Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Documentação e treinamento",
+      "description": "Criar documentação detalhada e guias de usuário para a nova funcionalidade, além de conduzir sessões de treinamento.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "details": "Escrever documentação técnica e guias de uso para facilitar a adoção.",
+      "testStrategy": "Revisão de documentação e feedback dos usuários durante o treinamento.",
+      "category": "documentation",
+      "createdAt": "2025-04-26T17:03:31.132Z",
+      "updatedAt": "2025-04-26T17:03:31.132Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Criação de guias de usuário",
+          "description": "Desenvolver documentos passo a passo para uso da nova funcionalidade.",
+          "status": "pending",
+          "createdAt": "2025-04-26T17:03:31.132Z",
+          "updatedAt": "2025-04-26T17:03:31.132Z"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-26T17:03:31.134Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 10,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 3,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 0
+  }
+}

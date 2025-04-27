@@ -1,0 +1,11 @@
+{
+  "type": "existing",
+  "name": "taskmanager",
+  "description": "TaskManager é uma ferramenta de linha de comando (CLI) inteligente para gerenciamento de tarefas em projetos de software. Ela integra automação, inteligência artificial e boas práticas de desenvolvimento para organizar, priorizar e acompanhar tarefas, facilitando a colaboração entre equipes e promovendo entregas mais ágeis, rastreáveis e documentadas. Com suporte a geração automática de tarefas, integração com múltiplos agentes de IA e personalização para diferentes fluxos de trabalho, o TaskManager transforma a gestão de projetos em um processo simples, eficiente e transparente.",
+  "technologies": [
+    "javascript",
+    "nodejs"
+  ],
+  "createdAt": "2025-04-26T16:15:05.601Z",
+  "lastUpdated": "2025-04-26T16:15:05.601Z"
+}

@@ -1,0 +1,176 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Análise e revisão do código existente",
+      "description": "Revisar o código existente do TaskManager para identificar áreas de melhoria e definir um plano de ação para a implementação de novas funcionalidades.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [],
+      "details": "Examine o código base, documente as funcionalidades atuais e identifique possíveis melhorias.",
+      "testStrategy": "N/A",
+      "category": "analysis",
+      "createdAt": "2025-04-26T16:56:49.425Z",
+      "updatedAt": "2025-04-26T16:56:49.425Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Revisar documentação existente",
+          "description": "Verificar a documentação do código para garantir que está atualizada e precisa.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        },
+        {
+          "id": 2,
+          "title": "Identificar áreas de melhoria",
+          "description": "Listar áreas onde o código pode ser otimizado ou refatorado.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Configuração do ambiente de desenvolvimento",
+      "description": "Configurar o ambiente de desenvolvimento para garantir que todos os desenvolvedores tenham as ferramentas necessárias para trabalhar no projeto.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1
+      ],
+      "details": "Configure Node.js e outras bibliotecas necessárias para o desenvolvimento do TaskManager.",
+      "testStrategy": "Verificar se o ambiente está rodando corretamente com um servidor local de teste.",
+      "category": "setup",
+      "createdAt": "2025-04-26T16:56:49.425Z",
+      "updatedAt": "2025-04-26T16:56:49.425Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Instalar Node.js e dependências",
+          "description": "Certificar-se de que Node.js e todas as dependências do projeto estão instaladas corretamente.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Implementação de melhorias de performance",
+      "description": "Otimizar o código para melhorar a performance do TaskManager, garantindo que as operações sejam realizadas de forma eficiente.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "details": "Refatore funções críticas para melhorar o tempo de execução e reduzir o consumo de recursos.",
+      "testStrategy": "Executar testes de benchmark para comparar a performance antes e depois das melhorias.",
+      "category": "backend",
+      "createdAt": "2025-04-26T16:56:49.425Z",
+      "updatedAt": "2025-04-26T16:56:49.425Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Identificar gargalos de performance",
+          "description": "Utilizar ferramentas de análise de performance para identificar onde o código pode ser otimizado.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        },
+        {
+          "id": 2,
+          "title": "Refatorar código para eficiência",
+          "description": "Aplicar as melhorias necessárias no código para alcançar melhor performance.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Integração com agentes de inteligência artificial",
+      "description": "Desenvolver e integrar agentes de inteligência artificial para melhorar a automação e inteligência do TaskManager.",
+      "status": "pending",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2
+      ],
+      "details": "Escolher e implementar APIs de IA que complementem as funcionalidades do TaskManager.",
+      "testStrategy": "Testar a precisão e relevância das sugestões de IA em cenários de uso real.",
+      "category": "backend",
+      "createdAt": "2025-04-26T16:56:49.425Z",
+      "updatedAt": "2025-04-26T16:56:49.425Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Selecionar APIs de IA",
+          "description": "Pesquisar e escolher APIs de inteligência artificial adequadas para integração.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        },
+        {
+          "id": 2,
+          "title": "Implementar integração com IA",
+          "description": "Desenvolver a integração com as APIs de IA selecionadas.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Teste e validação das novas funcionalidades",
+      "description": "Realizar testes abrangentes e validar as novas funcionalidades implementadas no TaskManager.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "details": "Testar todas as funcionalidades novas e modificadas para garantir que funcionam corretamente.",
+      "testStrategy": "Executar testes unitários, de integração e de aceitação, assegurando que todas as funcionalidades atendem aos requisitos.",
+      "category": "testing",
+      "createdAt": "2025-04-26T16:56:49.425Z",
+      "updatedAt": "2025-04-26T16:56:49.425Z",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Desenvolver casos de teste",
+          "description": "Criar casos de teste para cada funcionalidade nova ou alterada.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        },
+        {
+          "id": 2,
+          "title": "Executar testes e documentar resultados",
+          "description": "Executar os testes e documentar os resultados para análise posterior.",
+          "status": "pending",
+          "createdAt": "2025-04-26T16:56:49.425Z",
+          "updatedAt": "2025-04-26T16:56:49.425Z"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "totalTasks": 0,
+    "lastUpdated": "2025-04-26T16:56:49.428Z",
+    "taskCount": 5,
+    "completedCount": 0,
+    "pendingCount": 14,
+    "inProgressCount": 0,
+    "deferredCount": 0,
+    "cancelledCount": 0,
+    "highPriorityCount": 3,
+    "mediumPriorityCount": 2,
+    "lowPriorityCount": 0
+  }
+}

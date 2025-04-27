@@ -1,0 +1,88 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: Guide for using Task Master to manage task-driven development workflows
+globs: **/*
+alwaysApply: true
+---
+
+# Regras de Desenvolvimento com TaskManager
+
+## 1. Princípios Gerais
+
+- Todo desenvolvimento deve ser orientado por tarefas
+- Todas as tarefas devem ser registradas no TaskManager antes da implementação
+- Respeite sempre as dependências entre tarefas
+- Documente adequadamente cada tarefa concluída
+
+## 2. Fluxo de Trabalho Diário
+
+1. Verificar tarefas atuais: `taskmanager current`
+2. Verificar próxima tarefa disponível: `taskmanager next`
+3. Iniciar trabalho em uma tarefa: `taskmanager set status <id> --in-progress`
+4. Ao concluir, atualizar status: `taskmanager set status <id> --done`
+
+## 3. Estruturação de Tarefas
+
+- Tarefas complexas devem ser expandidas em subtarefas: `taskmanager expand <id>`
+- Use a opção `--ai` para análise inteligente: `taskmanager expand <id> --ai`
+- Mantenha tarefas pequenas e focadas (máximo 1 dia de trabalho)
+- Cada tarefa deve ter uma estratégia de teste definida
+
+## 4. Integração com IA
+
+- Configure suas chaves de API no arquivo `.taskmanager/.env`
+- Para geração automática de tarefas: `taskmanager create --ai`
+- Para análise de complexidade: `taskmanager expand <id> --ai`
+- Defina o modelo preferido (OpenAI, Anthropic, Hugging Face) na configuração
+
+## 5. Priorização e Dependências
+
+- Respeite a prioridade das tarefas (alta, média, baixa)
+- Não inicie uma tarefa com dependências pendentes
+- Use `taskmanager next` para identificar a próxima tarefa disponível
+- Verifique todas as dependências com `taskmanager show <id>`
+
+## 6. Documentação
+
+- Cada tarefa deve ter uma descrição clara e detalhada
+- Adicione detalhes técnicos em "Detalhes de Implementação"
+- Defina estratégias de teste específicas para cada tarefa
+- Use `taskmanager parse` para gerar documentação estruturada
+
+## 7. Organização do Projeto
+
+- Use o comando `taskmanager init` para inicializar um novo projeto
+- Mantenha arquivos relacionados à TaskManager no diretório `.taskmanager`
+- Backup de tarefas é feito automaticamente antes de operações críticas
+- Restaure backups quando necessário: `taskmanager create --restore`
+
+## 8. Revisão e Análise
+
+- Verifique o progresso geral do projeto com `taskmanager list`
+- Use as estatísticas para avaliar a velocidade de desenvolvimento
+- Avalie regularmente a complexidade das tarefas para melhor planejamento
+- Documente lições aprendidas ao concluir tarefas complexas
+
+## 9. Responsabilidades da Equipe
+
+- Todo membro deve atualizar o status de suas tarefas diariamente
+- Comunique bloqueios ou impedimentos imediatamente
+- Ao concluir uma tarefa, identifique a próxima de acordo com as dependências
+- Evite modificar tarefas atribuídas a outros membros da equipe
+
+## 10. Boas Práticas
+
+- Nunca pule o fluxo de trabalho baseado em tarefas
+- Mantenha a consistência nos títulos e descrições das tarefas
+- Atualize as estimativas de complexidade conforme o aprendizado
+- Use categorias para agrupar tarefas relacionadas
+- Registre insights técnicos importantes nos detalhes das tarefas
+
+Acompanhe o arquivo [commands.mdc](mdc:.cursor/rules/commands.mdc) para ter um guia completo dos comandos da CLI.
+Acompanhe o arquivo [dependencies.mdc](mdc:.cursor/rules/dependencies.mdc) para conhecer como lidar com dependencias no CLI.
+
+Este documento serve como guia para utilização eficiente do TaskManager em projetos de desenvolvimento, garantindo consistência, rastreabilidade e melhor gestão do trabalho.

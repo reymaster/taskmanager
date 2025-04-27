@@ -82,3 +82,32 @@ Para suporte ou reportar problemas, por favor abra uma issue no repositório do 
 
 ## Contribuição
 Contribuições são bem-vindas! Por favor, leia as diretrizes de contribuição antes de enviar pull requests.
+
+## Geração de Instruções para Agentes de IA e Editores
+
+O TaskManager é capaz de compilar automaticamente todas as regras e diretrizes da pasta `templates/editor/rules/cursor` em um único arquivo Markdown para uso por agentes de IA (como GitHub Copilot, Claude, Gemini, etc) ou editores inteligentes.
+
+### Como funciona
+- Durante a inicialização (`taskmanager init`), o sistema gera o arquivo `.github/copilot-instructions.md` contendo todas as regras compiladas para o Copilot.
+- O processo é flexível: basta alterar o destino e o nome do arquivo para gerar instruções para outros agentes ou editores (ex: `.vscode/copilot-instructions.md`, `.cursor/claude-instructions.md`, etc).
+
+### Como adicionar instruções para outros agentes/editores
+1. No código, utilize a função utilitária:
+   ```js
+   await generateAgentInstructions('nome-do-agente', 'pasta-de-destino');
+   ```
+   - Exemplo para Gemini no VSCode:
+     ```js
+     await generateAgentInstructions('gemini', '.vscode');
+     ```
+   - Exemplo para Claude no Cursor:
+     ```js
+     await generateAgentInstructions('claude', '.cursor');
+     ```
+2. O nome do arquivo gerado será, por padrão, `nome-do-agente-instructions.md` (ex: `copilot-instructions.md`).
+3. O conteúdo será sempre a compilação de todos os arquivos `.mdc` presentes em `templates/editor/rules/cursor`.
+
+### Observações
+- Não há dependência fixa da pasta `.github`. O destino pode ser qualquer pasta de configuração do projeto.
+- Para adicionar regras específicas para um agente/editor, basta criar um novo arquivo `.mdc` em `templates/editor/rules/cursor`.
+- O processo pode ser chamado manualmente ou automatizado em outros comandos/scripts conforme a necessidade do projeto.

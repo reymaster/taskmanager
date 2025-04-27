@@ -1,0 +1,57 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Caminhos do Projeto
+
+## Estrutura Base
+- Raiz do projeto: `/home/reinaldonascimento/Development/Projetos/Testes/docker-manager`
+- Frontend: `/home/reinaldonascimento/Development/Projetos/Testes/docker-manager/frontend`
+- Backend: `/home/reinaldonascimento/Development/Projetos/Testes/docker-manager/backend`
+
+## Regras de Localização
+
+### Frontend
+- Todos os arquivos e configurações do frontend DEVEM estar em `/frontend`
+- Arquivos de configuração como `package.json`, `vite.config.ts`, `postcss.config.js`, `tailwind.config.js` devem estar em `/frontend`
+- Instalação de dependências DEVE ser feita dentro de `/frontend`
+- Comandos de desenvolvimento (npm run dev, etc) DEVEM ser executados dentro de `/frontend`
+
+### Backend
+- Todos os arquivos e configurações do backend DEVEM estar em `/backend`
+- Arquivos de configuração como `package.json`, `.env`, etc devem estar em `/backend`
+- Instalação de dependências DEVE ser feita dentro de `/backend`
+- Comandos de desenvolvimento DEVEM ser executados dentro de `/backend`
+
+## Exemplos de Uso
+
+### Frontend
+```bash
+# Correto
+cd /home/reinaldonascimento/Development/Projetos/Testes/docker-manager/frontend
+npm install
+npm run dev
+
+# Incorreto
+cd /home/reinaldonascimento/Development/Projetos/Testes/docker-manager
+npm install # Não instalar na raiz!
+```
+
+### Backend
+```bash
+# Correto
+cd /home/reinaldonascimento/Development/Projetos/Testes/docker-manager/backend
+npm install
+npm run dev
+
+# Incorreto
+cd /home/reinaldonascimento/Development/Projetos/Testes/docker-manager
+npm install # Não instalar na raiz!
+```
+
+## Verificação de Localização
+Antes de executar qualquer comando ou criar/editar arquivos:
+1. Verificar o diretório atual com `pwd`
+2. Garantir que está no diretório correto (frontend ou backend)
+3. Se necessário, usar `cd` para navegar ao diretório apropriado

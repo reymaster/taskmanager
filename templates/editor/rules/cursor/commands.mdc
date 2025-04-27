@@ -1,0 +1,147 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: Command guide for using Task Master to manage task-driven development workflows
+globs: **/*
+alwaysApply: true
+---
+
+# Guia Completo de Comandos do TaskManager CLI
+
+## Inicialização
+
+### `taskmanager init`
+Inicializa o TaskManager no diretório atual.
+```
+Opções:
+  -y, --yes     Pula confirmações e usa valores padrão
+```
+
+## Gerenciamento de Tarefas
+
+### `taskmanager create`
+Cria novas tarefas para o projeto.
+```
+Opções:
+  -y, --yes                           Pula confirmações e usa valores padrão
+  -a, --ai                            Usa IA para gerar tarefas automaticamente
+  -t, --title <title>                 Título da tarefa (para criação manual)
+  -d, --description <description>     Descrição da tarefa (para criação manual)
+  -p, --priority <priority>           Prioridade da tarefa (high, medium, low)
+  --reset                             Recria as tarefas básicas do projeto, fazendo backup das atuais
+  --restore                           Lista e permite restaurar backups anteriores das tarefas
+```
+
+### `taskmanager list`
+Lista todas as tarefas do projeto.
+```
+Opções:
+  --show-subtasks                     Mostra as subtarefas de cada tarefa
+  --status <status>                   Filtra por status (pending, in-progress, done, cancelled)
+  --priority <priority>               Filtra por prioridade (high, medium, low)
+```
+
+### `taskmanager show <id>`
+Mostra detalhes completos de uma tarefa específica.
+
+### `taskmanager next`
+Mostra a próxima tarefa a ser implementada.
+
+### `taskmanager current`
+Mostra a tarefa atualmente em desenvolvimento.
+
+### `taskmanager set status <id>`
+Atualiza o status de uma tarefa ou subtarefa.
+
+## Expansão e Análise
+
+### `taskmanager expand <id>`
+Expande uma tarefa em subtarefas mais detalhadas.
+```
+Opções:
+  --num <number>      Número de subtarefas a serem criadas (padrão: 3)
+  --ai                Força o uso de IA para análise avançada
+  --no-ai             Desativa o uso de IA para análise
+```
+
+### `taskmanager parse`
+Gera arquivos PRD para cada tarefa.
+
+## Exemplos de Uso
+
+### Inicialização de projeto
+```bash
+taskmanager init
+```
+
+### Criação de tarefas
+```bash
+# Criar tarefa interativamente
+taskmanager create
+
+# Gerar tarefas usando IA
+taskmanager create --ai
+
+# Criar tarefa com título específico
+taskmanager create -t "Implementar autenticação"
+```
+
+### Visualização de tarefas
+```bash
+# Listar todas as tarefas
+taskmanager list
+
+# Listar tarefas com subtarefas
+taskmanager list --show-subtasks
+
+# Listar tarefas por status
+taskmanager list --status in-progress
+
+# Ver detalhes de uma tarefa
+taskmanager show 1
+```
+
+### Gerenciamento de workflow
+```bash
+# Ver próxima tarefa disponível
+taskmanager next
+
+# Ver tarefa atual
+taskmanager current
+
+# Atualizar status de uma tarefa
+taskmanager set status 1
+```
+
+### Expansão e análise
+```bash
+# Expandir tarefa em subtarefas com IA
+taskmanager expand 1 --ai
+
+# Expandir tarefa em 5 subtarefas
+taskmanager expand 1 --num=5
+
+# Gerar PRDs para documentação
+taskmanager parse
+```
+
+### Restauração e reset
+```bash
+# Restaurar backup de tarefas
+taskmanager create --restore
+
+# Resetar e recriar tarefas básicas
+taskmanager create --reset
+```
+
+## Dicas Rápidas
+
+- Use `taskmanager next` para identificar a próxima tarefa disponível para trabalho
+- Use `taskmanager expand --ai` para análise avançada de complexidade e subdivisão inteligente
+- Configure suas chaves de API no arquivo `.taskmanager/.env` para maximizar os recursos de IA
+- Use `taskmanager set status` para atualizar rapidamente o progresso de tarefas
+- Verifique regularmente `taskmanager current` para manter o foco na tarefa atual
+Este guia cobre todos os comandos disponíveis no TaskManager CLI, suas opções e exemplos de uso para facilitar o gerenciamento de tarefas no seu projeto.

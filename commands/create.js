@@ -451,18 +451,21 @@ async function createTasksWithAI(projectMetadata, hasExistingTasks) {
       name: 'additionalInfo',
       message: 'Informações adicionais que podem ajudar na geração de tarefas:',
       default: ''
-    },
-    {
-      type: 'number',
-      name: 'taskCount',
-      message: 'Quantas tarefas você gostaria de gerar?',
-      default: 5,
-      validate: (input) => input > 0 && input <= 15 ? true : 'O número deve estar entre 1 e 15'
     }
   ]);
 
-  // Construir a descrição para a IA
-  const context = taskContext === 'custom' ? taskContext.customContext : taskContext;
+  // Sempre gerar o número padrão de tarefas (ex: 5)
+  const taskCount = 5;
+
+  // Enriquecimento automático do prompt para 'Novo módulo ou funcionalidade'
+  let enrichedPrompt = '';
+  if (taskContext === 'feature') {
+    if (projectMetadata.type === 'new') {
+      enrichedPrompt = `\nGere uma lista de tarefas detalhadas para implementar a seguinte funcionalidade:\n- ${taskContext.taskDescription}\nAs tarefas devem ser claras, sequenciais, e cobrir todo o fluxo de decomposição, implementação, testes e documentação.\nInclua etapas para análise, geração de metadados, detecção de funcionalidades já implementadas, sugestões de melhorias e revisão pelo usuário.\n`;
+    } else {
+      enrichedPrompt = `\nGere uma lista de tarefas detalhadas para implementar a seguinte funcionalidade:\n- ${taskContext.taskDescription}\nAs tarefas devem ser claras, sequenciais, e cobrir todo o fluxo de decomposição, implementação, testes e documentação.\nInclua etapas para análise, geração de metadados, detecção de funcionalidades já implementadas, sugestões de melhorias e revisão pelo usuário.\nNão inclua tarefas de configuração de ambiente de desenvolvimento, a menos que o usuário peça explicitamente.\n`;
+    }
+  }
 
   // Carregar tarefas existentes para contexto adicional
   const tasksData = await loadTasks();
@@ -470,21 +473,14 @@ async function createTasksWithAI(projectMetadata, hasExistingTasks) {
     ? `\nTarefas existentes: ${tasksData.tasks.map(t => `#${t.id} - ${t.title}`).join(', ')}`
     : '';
 
-  const aiPrompt = `
-Nome do Projeto: ${projectMetadata.name}
-Descrição: ${projectMetadata.description}
-Tecnologias: ${projectMetadata.technologies?.join(', ') || 'Não especificadas'}
-Contexto: ${context}
-Descrição da tarefa: ${taskContext.taskDescription}
-Informações adicionais: ${taskContext.additionalInfo}${existingTasksContext}
-`;
+  const aiPrompt = `\nNome do Projeto: ${projectMetadata.name}\nDescrição: ${projectMetadata.description}\nTecnologias: ${projectMetadata.technologies?.join(', ') || 'Não especificadas'}\nContexto: ${taskContext.customContext || taskContext}\n${enrichedPrompt}Informações adicionais: ${taskContext.additionalInfo}${existingTasksContext}\nGere exatamente ${taskCount} tarefas principais, numeradas de 1 a ${taskCount}, cada uma representando uma etapa distinta do fluxo solicitado. Não crie subtarefas, apenas tarefas principais. Não pare antes de chegar à tarefa ${taskCount}.\n`;
 
   // Gerar tarefas
   const spinner = ora('Gerando tarefas com IA...').start();
 
   try {
     // Usar o módulo de IA para gerar tarefas
-    const generatedTasks = await generateTasks(aiPrompt, 'existing', taskContext.taskCount);
+    const generatedTasks = await generateTasks(aiPrompt, 'existing', taskCount);
 
     if (!generatedTasks || generatedTasks.length === 0) {
       spinner.fail('Não foi possível gerar tarefas com IA.');

@@ -1,0 +1,308 @@
+---
+description: If you need to know how dependencies are handled, consult this file
+globs:
+alwaysApply: false
+---
+---
+description: Diretrizes para gerenciar dependências e relacionamentos entre tarefas no TaskManager
+globs: utils/tasks.js
+alwaysApply: false
+---
+
+# Diretrizes de Gerenciamento de Dependências no TaskManager
+
+## Princípios de Estrutura de Dependências
+
+- **Referências de Dependências**:
+  - ✅ FAÇA: Represente dependências de tarefas como arrays de IDs
+  - ✅ FAÇA: Use IDs numéricos para referências diretas entre tarefas
+  - ✅ FAÇA: Use IDs em formato string com notação de ponto (ex: "1.2") para referências a subtarefas
+  - ❌ NÃO FAÇA: Misture tipos de referência sem conversão adequada
+
+  ```javascript
+  // ✅ FAÇA: Use formatos de dependência consistentes
+  // Para tarefas principais
+  task.dependencies = [1, 2, 3]; // Dependências de outras tarefas principais
+
+  // Para subtarefas
+  subtask.dependencies = [1, "3.2"]; // Dependência da tarefa principal 1 e subtarefa 2 da tarefa 3
+  ```
+
+- **Dependências de Subtarefas**:
+  - ✅ FAÇA: Permita que IDs numéricos de subtarefas referenciem outras subtarefas dentro do mesmo pai
+  - ✅ FAÇA: Converta entre formatos adequadamente quando necessário
+  - ❌ NÃO FAÇA: Crie dependências circulares entre subtarefas
+
+  ```javascript
+  // ✅ FAÇA: Normalize adequadamente as dependências de subtarefas
+  // Quando uma subtarefa se refere a outra subtarefa no mesmo pai
+  if (typeof depId === 'number' && depId < 100) {
+    // Provavelmente é uma referência a outra subtarefa na mesma tarefa pai
+    const fullSubtaskId = `${parentId}.${depId}`;
+    // Agora use fullSubtaskId para validação
+  }
+  ```
+
+## Validação de Dependências
+
+- **Verificação de Existência**:
+  - ✅ FAÇA: Valide que as tarefas referenciadas existem antes de adicionar dependências
+  - ✅ FAÇA: Forneça mensagens de erro claras para dependências inexistentes
+  - ✅ FAÇA: Remova referências a tarefas inexistentes durante a validação
+
+  ```javascript
+  // ✅ FAÇA: Verifique se a dependência existe antes de adicionar
+  const taskIndex = tasksData.tasks.findIndex(t => t.id === parseInt(dependsOnId));
+  if (taskIndex === -1) {
+    console.log(formatError(`Dependência #${dependsOnId} não encontrada.`));
+    return false;
+  }
+  ```
+
+- **Prevenção de Dependências Circulares**:
+  - ✅ FAÇA: Verifique dependências circulares antes de adicionar novos relacionamentos
+  - ✅ FAÇA: Use algoritmos de travessia de grafo (DFS) para detectar ciclos
+  - ✅ FAÇA: Forneça mensagens de erro claras explicando a cadeia circular
+
+  ```javascript
+  // ✅ FAÇA: Verifique dependências circulares
+  function hasCycle(taskId, visited = new Set(), recursionStack = new Set()) {
+    visited.add(taskId);
+    recursionStack.add(taskId);
+
+    const task = tasksData.tasks.find(t => t.id === taskId);
+    if (task && task.dependencies) {
+      for (const depId of task.dependencies) {
+        if (!visited.has(depId)) {
+          if (hasCycle(depId, visited, recursionStack)) {
+            return true;
+          }
+        } else if (recursionStack.has(depId)) {
+          return true;
+        }
+      }
+    }
+
+    recursionStack.delete(taskId);
+    return false;
+  }
+  ```
+
+- **Prevenção de Auto-Dependência**:
+  - ✅ FAÇA: Evite que tarefas dependam de si mesmas
+  - ✅ FAÇA: Trate auto-dependências diretas e indiretas
+
+  ```javascript
+  // ✅ FAÇA: Evite auto-dependências
+  if (taskId === dependsOnId) {
+    console.log(formatError(`Tarefa #${taskId} não pode depender de si mesma.`));
+    return false;
+  }
+  ```
+
+## Modificação de Dependências
+
+- **Adicionando Dependências**:
+  - ✅ FAÇA: Formate IDs de tarefas e dependências consistentemente
+  - ✅ FAÇA: Verifique dependências existentes para evitar duplicatas
+  - ✅ FAÇA: Ordene dependências para melhor legibilidade
+
+  ```javascript
+  // ✅ FAÇA: Formate IDs consistentemente ao adicionar dependências
+  export async function addDependency(taskId, dependsOnId) {
+    const tasksData = await loadTasks();
+
+    // Formate os IDs para garantir consistência
+    const formattedTaskId = parseInt(taskId, 10);
+    const formattedDepId = parseInt(dependsOnId, 10);
+
+    // Verifique se a tarefa já tem esta dependência
+    const task = tasksData.tasks.find(t => t.id === formattedTaskId);
+    if (task.dependencies.includes(formattedDepId)) {
+      console.log(formatInfo(`Tarefa #${taskId} já depende de #${dependsOnId}.`));
+      return true;
+    }
+
+    // Adicione a dependência e ordene
+    task.dependencies.push(formattedDepId);
+    task.dependencies.sort((a, b) => a - b);
+
+    await saveTasks(tasksData);
+    return true;
+  }
+  ```
+
+- **Removendo Dependências**:
+  - ✅ FAÇA: Verifique se a dependência existe antes de remover
+  - ✅ FAÇA: Trate diferentes formatos de ID consistentemente
+  - ✅ FAÇA: Forneça feedback sobre o resultado da remoção
+
+  ```javascript
+  // ✅ FAÇA: Trate corretamente a remoção de dependências
+  export async function removeDependency(taskId, dependsOnId) {
+    const tasksData = await loadTasks();
+
+    // Formate os IDs
+    const formattedTaskId = parseInt(taskId, 10);
+    const formattedDepId = parseInt(dependsOnId, 10);
+
+    // Encontre a tarefa
+    const task = tasksData.tasks.find(t => t.id === formattedTaskId);
+    if (!task) {
+      console.log(formatError(`Tarefa #${taskId} não encontrada.`));
+      return false;
+    }
+
+    // Verifique se a dependência existe
+    const depIndex = task.dependencies.indexOf(formattedDepId);
+    if (depIndex === -1) {
+      console.log(formatInfo(`Tarefa #${taskId} não depende de #${dependsOnId}.`));
+      return false;
+    }
+
+    // Remova a dependência
+    task.dependencies.splice(depIndex, 1);
+    await saveTasks(tasksData);
+
+    console.log(formatSuccess(`Dependência #${dependsOnId} removida de #${taskId}.`));
+    return true;
+  }
+  ```
+
+## Limpeza de Dependências
+
+- **Remoção de Duplicatas**:
+  - ✅ FAÇA: Use objetos Set para identificar e remover duplicatas
+  - ✅ FAÇA: Trate formatos de ID numéricos e string
+
+  ```javascript
+  // ✅ FAÇA: Remova dependências duplicadas
+  export function validateAndAdjustDependencies(tasks) {
+    for (const task of tasks) {
+      if (!task.dependencies) continue;
+
+      // Use Set para remover duplicatas
+      const uniqueDeps = new Set();
+      task.dependencies = task.dependencies.filter(depId => {
+        const depIdStr = String(depId);
+        if (uniqueDeps.has(depIdStr)) {
+          return false;
+        }
+        uniqueDeps.add(depIdStr);
+        return true;
+      });
+    }
+
+    return tasks;
+  }
+  ```
+
+- **Limpeza de Referências Inválidas**:
+  - ✅ FAÇA: Verifique e remova referências a tarefas inexistentes
+  - ✅ FAÇA: Verifique e remova auto-referências
+  - ✅ FAÇA: Acompanhe e relate mudanças feitas durante a limpeza
+
+  ```javascript
+  // ✅ FAÇA: Filtre dependências de tarefas inválidas
+  export async function cleanupDependencies() {
+    const tasksData = await loadTasks();
+    let changesMade = 0;
+
+    // Crie um conjunto de IDs válidos
+    const validTaskIds = new Set(tasksData.tasks.map(t => t.id));
+
+    for (const task of tasksData.tasks) {
+      if (!task.dependencies) continue;
+
+      const originalLength = task.dependencies.length;
+      task.dependencies = task.dependencies.filter(depId => {
+        // Remova dependências para tarefas inexistentes
+        if (!validTaskIds.has(depId)) {
+          return false;
+        }
+        // Remova auto-dependências
+        if (depId === task.id) {
+          return false;
+        }
+        return true;
+      });
+
+      changesMade += (originalLength - task.dependencies.length);
+    }
+
+    if (changesMade > 0) {
+      await saveTasks(tasksData);
+      console.log(formatSuccess(`${changesMade} dependências inválidas removidas.`));
+    } else {
+      console.log(formatInfo('Nenhuma dependência inválida encontrada.'));
+    }
+
+    return changesMade;
+  }
+  ```
+
+## Visualização de Dependências
+
+- **Indicadores de Status**:
+  - ✅ FAÇA: Use indicadores visuais para mostrar status de dependência (✅/⏱️)
+  - ✅ FAÇA: Formate listas de dependências consistentemente
+
+  ```javascript
+  // ✅ FAÇA: Formate dependências com indicadores de status
+  export function formatDependency(depId, allTasks) {
+    const depTask = allTasks.find(t => t.id === depId);
+
+    if (!depTask) {
+      return chalk.red(`#${depId} (não encontrada)`);
+    }
+
+    const icon = depTask.status === 'done' || depTask.status === 'completed'
+      ? chalk.green('✅')
+      : chalk.yellow('⏱️');
+
+    return `${icon} #${depId} - ${depTask.title}`;
+  }
+  ```
+
+## Detecção de Ciclos
+
+- **Travessia de Grafo**:
+  - ✅ FAÇA: Use busca em profundidade (DFS) para detecção de ciclos
+  - ✅ FAÇA: Acompanhe nós visitados e pilha de recursão
+  - ✅ FAÇA: Suporte dependências tanto de tarefas quanto de subtarefas
+
+  ```javascript
+  // ✅ FAÇA: Use algoritmos adequados de detecção de ciclos
+  export function detectCycles(tasks) {
+    const cycles = [];
+    const visited = new Set();
+
+    function dfs(taskId, path = []) {
+      visited.add(taskId);
+      path.push(taskId);
+
+      const task = tasks.find(t => t.id === taskId);
+      if (task && task.dependencies) {
+        for (const depId of task.dependencies) {
+          const index = path.indexOf(depId);
+          if (index !== -1) {
+            // Ciclo encontrado
+            cycles.push(path.slice(index).concat(depId));
+          } else if (!visited.has(depId)) {
+            dfs(depId, [...path]);
+          }
+        }
+      }
+    }
+
+    for (const task of tasks) {
+      if (!visited.has(task.id)) {
+        dfs(task.id);
+      }
+    }
+
+    return cycles;
+  }
+  ```
+
+Consulte `utils/tasks.js` para exemplos de implementação e integração com o sistema do TaskManager para gerenciamento eficiente de dependências de tarefas.
