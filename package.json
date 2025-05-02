@@ -1,6 +1,6 @@
 {
     "name": "taskmanager-ai",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A CLI tool to manage your projects tasks with AI",
     "type": "module",
     "main": "index.js",
