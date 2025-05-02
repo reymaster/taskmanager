@@ -1,6 +1,6 @@
 # TaskManager AI CLI
 
-![TaskManager Logo](https://via.placeholder.com/150?text=TaskManager)
+![TaskManager Logo](https://raw.githubusercontent.com/reymaster/taskmanager/main/logo.png)
 
 [![NPM Version](https://img.shields.io/npm/v/taskmanager.svg)](https://npmjs.org/package/taskmanager)
 [![NPM Downloads](https://img.shields.io/npm/dm/taskmanager.svg)](https://npmjs.org/package/taskmanager)
